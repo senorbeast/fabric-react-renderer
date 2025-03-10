@@ -1,0 +1,22 @@
+{
+  "name": "fabric-react-renderer",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "@types/fabric": "^5.3.10",
+    "fabric": "^6.6.1",
+    "react": "19.0.0",
+    "react-reconciler": "^0.31.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-reconciler": "^0.28.9",
+    "typescript": "^5.8.2"
+  }
+}
