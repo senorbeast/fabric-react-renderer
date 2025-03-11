@@ -12,14 +12,10 @@ const Buttons = () => {
   };
 
   const addRect = () => {
-    const rect = new fabric.Triangle({
-      left: 100,
-      top: 100,
-      fill: "blue",
-      width: 100,
-      height: 100,
+    fabric.FabricImage.fromURL("https://via.placeholder.com/150", (img) => {
+      img.set({ left: 100, top: 100 });
+      canvas?.add(img);
     });
-    canvas?.add(rect);
   };
 
   const updateBackground = () => {

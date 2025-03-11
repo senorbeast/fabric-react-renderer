@@ -64,7 +64,7 @@ const hostConfig: HostConfig<
       );
     }
 
-    // We ignore the prefix since it's fixed, and only use the element name.
+    // Use the part after the dot as the element name.
     const elementName = parts[1];
     const className = capitalize(elementName);
     const FabricClass = (fabric as any)[className];
@@ -73,20 +73,29 @@ const hostConfig: HostConfig<
     }
 
     let instance;
-    // Special handling for classes like Path
-    if (className === "Path") {
-      // Extract the path property and pass it as the first argument,
-      // and remove it from options.
-      const { path, ...otherProps } = props;
-      if (!path) {
-        throw new Error("Path data is required for fabric.Path");
-      }
-      instance = new FabricClass(path, {
+    // Priority: If a prop "firstProp" exists, use it as the first argument.
+    if (props.hasOwnProperty("firstProp")) {
+      const specialArg = props.firstProp;
+      // Remove firstProp from props
+      const { firstProp, ...otherProps } = props;
+      instance = new FabricClass(specialArg, {
         left: props.left ?? 0,
         top: props.top ?? 0,
         ...otherProps,
       });
-    } else {
+    }
+    // Otherwise, if a prop named after the lower-case class name exists, use it.
+    else if (props.hasOwnProperty(elementName.toLowerCase())) {
+      const specialArg = props[elementName.toLowerCase()];
+      const { [elementName.toLowerCase()]: removed, ...otherProps } = props;
+      instance = new FabricClass(specialArg, {
+        left: props.left ?? 0,
+        top: props.top ?? 0,
+        ...otherProps,
+      });
+    }
+    // Fallback to passing the entire props object as options.
+    else {
       instance = new FabricClass({
         left: props.left ?? 0,
         top: props.top ?? 0,

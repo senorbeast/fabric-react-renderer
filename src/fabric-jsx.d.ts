@@ -30,13 +30,6 @@ type FabProxy = {
   >}`;
 };
 
-// Augment the React namespace to include our Fabric elements.
-declare global {
-  namespace JSX {
-    interface IntrinsicElements extends FabricIntrinsicElements {}
-  }
-}
-
 declare module "react" {
   namespace JSX {
     interface IntrinsicElements extends FabricIntrinsicElements {}
