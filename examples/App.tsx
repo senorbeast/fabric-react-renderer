@@ -3,27 +3,19 @@ import { FabricCanvas } from "../src/Canvas";
 import ErrorBoundary from "./ErrorBoundary";
 import Buttons from "./components/Buttons";
 
-declare global {
-  namespace React {
-    interface IntrinsicElements {
-      rect: {
-        left?: number;
-        top?: number;
-        fill?: string;
-        width?: number;
-        height?: number;
-        // Allow additional props (such as event handlers, etc.)
-        [key: string]: any;
-      };
-      // Add more elements (e.g., group, image) as needed.
-    }
-  }
-}
-
 const ReactWrapped = () => {
   return (
     <>
       <rect left={350} top={350} width={30} height={100} fill="green" />
+      <circle left={450} top={350} radius={60} fill="lightgrey" />
+      <triangle left={350} top={50} fill="purple" />
+      {/* <text
+        left={350}
+        top={350}
+        fill="green"
+        fontSize={30}
+        text="Hello World"
+      /> */}
     </>
   );
 };

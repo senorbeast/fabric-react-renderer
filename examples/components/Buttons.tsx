@@ -12,12 +12,12 @@ const Buttons = () => {
   };
 
   const addRect = () => {
-    const rect = new fabric.Rect({
+    const rect = new fabric.Triangle({
       left: 100,
       top: 100,
-      width: 200,
+      fill: "blue",
+      width: 100,
       height: 100,
-      fill: "red",
     });
     canvas?.add(rect);
   };

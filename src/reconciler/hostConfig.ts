@@ -12,6 +12,10 @@ export interface FabricRoot {
   canvas: fabric.Canvas;
 }
 
+function capitalize(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 // Our instance type will be a Fabric.js object (we support only Rect for now).
 export type FabricElement = fabric.Object;
 // Here we supply all 13 type arguments for HostConfig:
@@ -52,22 +56,22 @@ const hostConfig: HostConfig<
     hostContext: {},
     internalInstanceHandle: any
   ): FabricElement {
-    let instance: FabricElement;
-    switch (type) {
-      case "rect":
-        console.log("Creating rect with props", props);
-        instance = new fabric.Rect({
-          left: props.left ?? 0,
-          top: props.top ?? 0,
-          fill: props.fill ?? "red",
-          width: props.width ?? 100,
-          height: props.height ?? 100,
-          ...props, // pass any additional props
-        });
-        break;
-      default:
-        throw new Error(`Unknown element type: ${type}`);
+    // Convert the type (e.g., "rect") to its Fabric class name (e.g., "Rect")
+    const className = capitalize(type);
+    // Look up the class in the fabric module.
+    const FabricClass = (fabric as any)[className];
+    if (typeof FabricClass !== "function") {
+      throw new Error(`Unsupported fabric object type: ${type}`);
     }
+    // Instantiate the Fabric object with props. You can filter or massage props as needed.
+    const instance = new FabricClass({
+      left: props.left ?? 0,
+      top: props.top ?? 0,
+      fill: props.fill ?? "red",
+      width: props.width ?? 100,
+      height: props.height ?? 100,
+      ...props,
+    });
     return instance;
   },
 
