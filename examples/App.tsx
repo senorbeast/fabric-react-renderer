@@ -1,34 +1,40 @@
-import { Canvas, Rect, Circle, Group } from "fabric-react-renderer";
-import { useFabricEvent } from "../src/hooks/useFabricEvent";
+import React from "react";
+import { FabricCanvas } from "../src/Canvas";
+import ErrorBoundary from "./ErrorBoundary";
 
-function Demo() {
-  const rectRef = useRef<fabric.Rect>();
-
-  useFabricEvent(rectRef.current, "selected", (e) => {
-    console.log("Rect selected!", e.target);
-  });
-
-  return (
-    <Canvas width={800} height={600}>
-      <Group>
-        <Rect
-          ref={rectRef}
-          left={100}
-          top={100}
-          width={200}
-          height={100}
-          fill="red"
-          custom={{ customId: "rect-1" }}
-          onSelected={(e) => console.log("Selected via prop")}
-        />
-        <Circle
-          left={400}
-          top={300}
-          radius={50}
-          fill="blue"
-          onMouseDown={(e) => console.log("Circle clicked")}
-        />
-      </Group>
-    </Canvas>
-  );
+declare global {
+  namespace React {
+    interface IntrinsicElements {
+      rect: {
+        left?: number;
+        top?: number;
+        fill?: string;
+        width?: number;
+        height?: number;
+        // Allow additional props (such as event handlers, etc.)
+        [key: string]: any;
+      };
+      // Add more elements (e.g., group, image) as needed.
+    }
+  }
 }
+
+export {};
+
+const App: React.FC = () => {
+  return (
+    <>
+      <div>Fabric React Renderer</div>
+      <h1>Canvas</h1>
+      <FabricCanvas
+        width={800}
+        height={600}
+        style={{ border: "1px solid #ccc" }}
+      >
+        <rect left={50} top={50} width={200} height={100} fill="blue" />
+      </FabricCanvas>
+    </>
+  );
+};
+
+export default App;

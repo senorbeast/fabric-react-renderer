@@ -6,17 +6,21 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc -w",
+    "vite": "vite",
     "prepare": "npm run build"
   },
   "dependencies": {
     "@types/fabric": "^5.3.10",
     "fabric": "^6.6.1",
     "react": "19.0.0",
+    "react-dom": "^19.0.0",
     "react-reconciler": "^0.31.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
     "@types/react-reconciler": "^0.28.9",
-    "typescript": "^5.8.2"
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.1"
   }
 }
