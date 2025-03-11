@@ -47,7 +47,7 @@ const App: React.FC = () => {
           style={{ border: "1px solid #ccc" }}
         >
           <rect left={50} top={50} width={200} height={100} fill="blue" />
-          <rect left={50} top={50} width={200} height={100} fill="red" />
+          <rect left={250} top={250} width={100} height={100} fill="red" />
         </FabricCanvas>
         <Buttons />
       </div>

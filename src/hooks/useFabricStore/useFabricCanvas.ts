@@ -1,4 +1,3 @@
-// useFabricCanvas.ts
 import { useFabricStore } from "./fabricStore";
 
 export function useFabricCanvas() {

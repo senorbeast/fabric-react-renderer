@@ -55,6 +55,7 @@ const hostConfig: HostConfig<
     let instance: FabricElement;
     switch (type) {
       case "rect":
+        console.log("Creating rect with props", props);
         instance = new fabric.Rect({
           left: props.left ?? 0,
           top: props.top ?? 0,
@@ -199,7 +200,10 @@ const hostConfig: HostConfig<
   },
 
   clearContainer(container: FabricRoot): void {
-    container.canvas.clear();
+    // Check if the underlying context exists before clearing.
+    if (container.canvas.contextContainer) {
+      container.canvas.clear();
+    }
   },
 
   scheduleTimeout: setTimeout,
