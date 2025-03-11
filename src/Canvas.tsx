@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import { render as fabricRender } from "./reconciler/hostConfig";
 import * as fabric from "fabric";
+import { useFabricStore } from "./hooks/useFabricStore/fabricStore";
 
 export interface FabricCanvasProps
   extends React.HTMLAttributes<HTMLCanvasElement> {}
@@ -10,17 +11,21 @@ export const FabricCanvas: React.FC<FabricCanvasProps> = ({
   ...rest
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const fabricCanvasRef = useRef<fabric.Canvas>(null);
+  const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
+  const { setCanvas } = useFabricStore();
 
   useEffect(() => {
     if (canvasRef.current) {
-      // Create a Fabric canvas instance on the canvas element.
-      fabricCanvasRef.current = new fabric.Canvas(canvasRef.current);
-      // Render the React tree into our Fabric canvas.
-      fabricRender(children, fabricCanvasRef.current);
+      const fabricCanvas = new fabric.Canvas(canvasRef.current);
+      // Set the canvas in the store so that it can be accessed globally.
+      fabricCanvasRef.current = fabricCanvas;
+      setCanvas(fabricCanvas);
+      fabricRender(children, fabricCanvas);
     }
     return () => {
+      // Optionally reset the canvas in the store on unmount.
       fabricCanvasRef.current?.dispose();
+      setCanvas(null);
     };
   }, [children]);
 

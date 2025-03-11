@@ -250,10 +250,6 @@ const hostConfig: HostConfig<
   maySuspendCommit() {
     return false;
   },
-  supportsMutation: function (...args) {
-    console.log("createInstance", ...args);
-    return true;
-  },
 };
 
 // Create the reconciler instance.
