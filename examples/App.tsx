@@ -20,6 +20,14 @@ declare global {
   }
 }
 
+const ReactWrapped = () => {
+  return (
+    <>
+      <rect left={350} top={350} width={30} height={100} fill="green" />
+    </>
+  );
+};
+
 export {};
 
 const App: React.FC = () => {
@@ -48,6 +56,7 @@ const App: React.FC = () => {
         >
           <rect left={50} top={50} width={200} height={100} fill="blue" />
           <rect left={250} top={250} width={100} height={100} fill="red" />
+          <ReactWrapped />
         </FabricCanvas>
         <Buttons />
       </div>
