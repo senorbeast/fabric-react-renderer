@@ -10,13 +10,24 @@ type FabricObjectKeys = {
     : never;
 }[keyof typeof fabric];
 
-// Map the constructors to JSX intrinsic element types.
+// Map the constructors to JSX intrinsic element types with a fixed prefix.
+// This produces keys like "fabric.rect", "fabric.circle", etc.
 type FabricIntrinsicElements = {
-  [K in FabricObjectKeys as Lowercase<K & string>]: Partial<
+  [K in FabricObjectKeys as `fabric.${Lowercase<K & string>}`]: Partial<
     InstanceType<(typeof fabric)[K]>
-  > & {
-    children?: React.ReactNode;
-  };
+  > & { children?: React.ReactNode };
+} & {
+  [K in FabricObjectKeys as `fab.${Lowercase<K & string>}`]: Partial<
+    InstanceType<(typeof fabric)[K]>
+  > & { children?: React.ReactNode };
+};
+
+// Define the type for our proxy object. This makes properties like "triangle" available
+// and their value will be a string in the form "fab.triangle".
+type FabProxy = {
+  [K in FabricObjectKeys as Lowercase<K & string>]: `fab.${Lowercase<
+    K & string
+  >}`;
 };
 
 // Augment the React namespace to include our Fabric elements.
@@ -26,11 +37,8 @@ declare global {
   }
 }
 
-// Augment React’s JSX namespace.
 declare module "react" {
   namespace JSX {
-    // This will merge with (and override conflicting) definitions.
-    // If you are not using SVG in your project, this should work fine.
     interface IntrinsicElements extends FabricIntrinsicElements {}
   }
 }

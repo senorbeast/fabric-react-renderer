@@ -56,22 +56,44 @@ const hostConfig: HostConfig<
     hostContext: {},
     internalInstanceHandle: any
   ): FabricElement {
-    // Convert the type (e.g., "rect") to its Fabric class name (e.g., "Rect")
-    const className = capitalize(type);
-    // Look up the class in the fabric module.
+    // Expect type to be in the form "fabric.rect" or "fab.rect"
+    const parts = type.split(".");
+    if (parts.length !== 2 || (parts[0] !== "fabric" && parts[0] !== "fab")) {
+      throw new Error(
+        `Element type must have a prefix "fabric." or "fab.", e.g., "fabric.rect". Received: ${type}`
+      );
+    }
+
+    // We ignore the prefix since it's fixed, and only use the element name.
+    const elementName = parts[1];
+    const className = capitalize(elementName);
     const FabricClass = (fabric as any)[className];
     if (typeof FabricClass !== "function") {
-      throw new Error(`Unsupported fabric object type: ${type}`);
+      throw new Error(`Unsupported fabric object type: ${className}`);
     }
-    // Instantiate the Fabric object with props. You can filter or massage props as needed.
-    const instance = new FabricClass({
-      left: props.left ?? 0,
-      top: props.top ?? 0,
-      fill: props.fill ?? "red",
-      width: props.width ?? 100,
-      height: props.height ?? 100,
-      ...props,
-    });
+
+    let instance;
+    // Special handling for classes like Path
+    if (className === "Path") {
+      // Extract the path property and pass it as the first argument,
+      // and remove it from options.
+      const { path, ...otherProps } = props;
+      if (!path) {
+        throw new Error("Path data is required for fabric.Path");
+      }
+      instance = new FabricClass(path, {
+        left: props.left ?? 0,
+        top: props.top ?? 0,
+        ...otherProps,
+      });
+    } else {
+      instance = new FabricClass({
+        left: props.left ?? 0,
+        top: props.top ?? 0,
+        ...props,
+      });
+    }
+
     return instance;
   },
 
