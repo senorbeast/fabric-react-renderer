@@ -16,6 +16,10 @@ const Buttons = () => {
       img.set({ left: 100, top: 100 });
       canvas?.add(img);
     });
+
+    new fabric.Polyline([], { left: 0 });
+    new fabric.Rect();
+    new fabric.Triangle();
   };
 
   const updateBackground = () => {

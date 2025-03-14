@@ -8,8 +8,12 @@ const ReactWrapped = () => {
   return (
     <>
       <fab.rect left={350} top={350} width={30} height={100} fill="green" />
-      <fab.circle left={450} top={350} radius={60} fill="lightgrey" />
-      <fab.triangle left={350} top={50} fill="purple" />
+      {/* <fab.blur blur={0.5} /> */}
+      {/* <fab.grayscale mode="luminosity" /> */}
+      <fab.group objects={[]}>
+        <fab.circle left={450} top={350} radius={60} fill="lightgrey" />
+        <fab.triangle left={350} top={50} fill="purple" />
+      </fab.group>
       <fab.path
         path={[
           ["M", 0, 0],
@@ -21,27 +25,30 @@ const ReactWrapped = () => {
         strokeWidth={2}
       />
       <fab.textbox
-        firstProp="Hello, from Textbox!"
-        left={50}
+        text="Hello, world!"
+        left={130}
         top={350}
+        onMouseDown={() => console.log("textbox mousedown")}
+        angle={30}
+        mouseUpHandler={() => console.log("textbox mouseup")}
         fill="white"
       />
       <fab.polygon
         left={650}
         top={250}
         fill="pink"
-        firstProp={[
-          { x: 0, y: 0 },
-          { x: 50, y: 50 },
-          { x: 100, y: 0 },
-          { x: 50, y: -50 },
+        points={[
+          { x: 100, y: 100 },
+          { x: 200, y: 100 },
+          { x: 300, y: 200 },
         ]}
       />
+
       <fab.text left={50} top={50} text="Hello, world!" fill="white" />
       <fab.polyline
         left={570}
         top={100}
-        firstProp={[
+        points={[
           { x: 100, y: 100 },
           { x: 200, y: 100 },
           { x: 300, y: 200 },
@@ -49,7 +56,7 @@ const ReactWrapped = () => {
         fill="white"
         stroke="red"
       />
-      <fab.image left={50} top={50} src="https://via.placeholder.com/150" />
+      {/* <fab.image left={50} top={50} src="https://via.placeholder.com/150" /> */}
       <fab.ellipse left={450} top={50} rx={60} ry={40} fill="orange" />
     </>
   );

@@ -6,6 +6,7 @@ import {
   ContinuousEventPriority,
   DefaultEventPriority,
 } from "react-reconciler/constants";
+import { mainGetParams } from "../getParams";
 
 // Define our container type which wraps a Fabric.Canvas.
 export interface FabricRoot {
@@ -15,8 +16,22 @@ export interface FabricRoot {
 function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
+const constructorMainPropMap: Record<
+  string,
+  { mainProp: string; isArray?: boolean }
+> = {
+  Group: { mainProp: "objects", isArray: true },
+  Text: { mainProp: "text" },
+  IText: { mainProp: "text" },
+  Textbox: { mainProp: "text" },
+  Polyline: { mainProp: "points", isArray: true },
+  Polygon: { mainProp: "points", isArray: true },
+  Line: { mainProp: "points", isArray: true },
+  Path: { mainProp: "path" },
+  Image: { mainProp: "src" },
+};
+mainGetParams();
 
-// Our instance type will be a Fabric.js object (we support only Rect for now).
 export type FabricElement = fabric.Object;
 // Here we supply all 13 type arguments for HostConfig:
 // 1. Type: our element names (string)
@@ -56,54 +71,39 @@ const hostConfig: HostConfig<
     hostContext: {},
     internalInstanceHandle: any
   ): FabricElement {
-    // Expect type to be in the form "fabric.rect" or "fab.rect"
-    const parts = type.split(".");
-    if (parts.length !== 2 || (parts[0] !== "fabric" && parts[0] !== "fab")) {
-      throw new Error(
-        `Element type must have a prefix "fabric." or "fab.", e.g., "fabric.rect". Received: ${type}`
-      );
+    const [prefix, elementName] = type.split(".");
+    if (prefix !== "fab") {
+      throw new Error(`Invalid fabric element prefix: ${type}`);
     }
 
-    // Use the part after the dot as the element name.
-    const elementName = parts[1];
     const className = capitalize(elementName);
+
     const FabricClass = (fabric as any)[className];
-    if (typeof FabricClass !== "function") {
-      throw new Error(`Unsupported fabric object type: ${className}`);
+    if (!FabricClass) {
+      throw new Error(`Fabric.js class not found: ${className}`);
     }
 
-    let instance;
-    // Priority: If a prop "firstProp" exists, use it as the first argument.
-    if (props.hasOwnProperty("firstProp")) {
-      const specialArg = props.firstProp;
-      // Remove firstProp from props
-      const { firstProp, ...otherProps } = props;
-      instance = new FabricClass(specialArg, {
-        left: props.left ?? 0,
-        top: props.top ?? 0,
-        ...otherProps,
-      });
-    }
-    // Otherwise, if a prop named after the lower-case class name exists, use it.
-    else if (props.hasOwnProperty(elementName.toLowerCase())) {
-      const specialArg = props[elementName.toLowerCase()];
-      const { [elementName.toLowerCase()]: removed, ...otherProps } = props;
-      instance = new FabricClass(specialArg, {
-        left: props.left ?? 0,
-        top: props.top ?? 0,
-        ...otherProps,
-      });
-    }
-    // Fallback to passing the entire props object as options.
-    else {
-      instance = new FabricClass({
-        left: props.left ?? 0,
-        top: props.top ?? 0,
-        ...props,
-      });
+    const config = constructorMainPropMap[className];
+
+    if (config) {
+      const { mainProp, isArray } = config;
+      const mainValue = props[mainProp];
+
+      if (mainValue === undefined) {
+        throw new Error(`Missing required prop '${mainProp}' for ${className}`);
+      }
+
+      const { [mainProp]: _, ...options } = props;
+
+      if (isArray && !Array.isArray(mainValue)) {
+        throw new Error(`Prop '${mainProp}' must be an array for ${className}`);
+      }
+
+      return new FabricClass(mainValue, options);
     }
 
-    return instance;
+    // Handle normal object constructors
+    return new FabricClass(props);
   },
 
   createTextInstance(
@@ -119,7 +119,14 @@ const hostConfig: HostConfig<
     parentInstance: FabricElement,
     child: FabricElement
   ): void {
-    if ("add" in parentInstance && typeof parentInstance.add === "function") {
+    if (parentInstance instanceof fabric.Group) {
+      parentInstance.add(child);
+      parentInstance.dirty = true; // Mark group as needing re-render
+      parentInstance.setCoords(); // Ensure correct positioning
+    } else if (
+      "add" in parentInstance &&
+      typeof parentInstance.add === "function"
+    ) {
       parentInstance.add(child);
     }
   },
@@ -128,7 +135,11 @@ const hostConfig: HostConfig<
     parentInstance: FabricElement | FabricRoot,
     child: FabricElement
   ): void {
-    if ("canvas" in parentInstance) {
+    if (parentInstance instanceof fabric.Group) {
+      parentInstance.add(child);
+      parentInstance.dirty = true;
+      parentInstance.setCoords();
+    } else if ("canvas" in parentInstance) {
       (parentInstance as FabricRoot).canvas.add(child);
     } else if (
       "add" in parentInstance &&
@@ -146,7 +157,11 @@ const hostConfig: HostConfig<
     parentInstance: FabricElement | FabricRoot,
     child: FabricElement
   ): void {
-    if ("canvas" in parentInstance) {
+    if (parentInstance instanceof fabric.Group) {
+      parentInstance.remove(child);
+      parentInstance.dirty = true;
+      parentInstance.setCoords();
+    } else if ("canvas" in parentInstance) {
       (parentInstance as FabricRoot).canvas.remove(child);
     } else if (
       "remove" in parentInstance &&
