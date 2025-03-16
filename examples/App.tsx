@@ -7,6 +7,23 @@ import { fab } from "../src/fab";
 const ReactWrapped = () => {
   return (
     <>
+      <fab.circle
+        left={200}
+        top={200}
+        radius={50}
+        fill="green"
+        eventable={true}
+        events={{
+          onClick: () => console.log("Circle clicked"),
+        }}
+        selectable={true}
+        onClick={() => console.log("Circle clicked")}
+        onMouseDown={() => console.log("Circle mousedown")}
+        onMouseUp={() => console.log("Circle mouseup")}
+        onMouseMove={() => console.log("Circle mousemove")}
+        onMouseOut={() => console.log("Circle mouseout")}
+      />
+
       <fab.rect left={350} top={350} width={30} height={100} fill="green" />
       {/* <fab.blur blur={0.5} /> */}
       {/* <fab.grayscale mode="luminosity" /> */}
@@ -14,6 +31,7 @@ const ReactWrapped = () => {
         <fab.circle left={450} top={350} radius={60} fill="lightgrey" />
         <fab.triangle left={350} top={50} fill="purple" />
       </fab.group>
+
       <fab.path
         path={[
           ["M", 0, 0],

@@ -30,7 +30,6 @@ const constructorMainPropMap: Record<
   Path: { mainProp: "path" },
   Image: { mainProp: "src" },
 };
-mainGetParams();
 
 export type FabricElement = fabric.Object;
 // Here we supply all 13 type arguments for HostConfig:
@@ -290,15 +289,12 @@ const hostConfig: HostConfig<
 
   detachDeletedInstance: () => {},
   resolveUpdatePriority: (...args) => {
-    console.log("resolveUpdatePriority", args);
     return DefaultEventPriority;
   },
   getCurrentUpdatePriority(...args) {
-    console.log("getCurrentUpdatePriority", args);
     return DefaultEventPriority;
   },
   setCurrentUpdatePriority(...args) {
-    console.log("setCurrentUpdatePriority", args);
     return DefaultEventPriority;
   },
   maySuspendCommit() {

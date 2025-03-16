@@ -1,52 +1,47 @@
 import * as fabric from "fabric";
 
-type Constructor<T> = new (...args: any[]) => T;
+// Get the constructor’s first argument type
+type FirstArg<T> = T extends new (...args: infer P) => any ? P[0] : never;
 
-// Improved type extraction for constructor arguments
-type FirstArg<T> = T extends new (arg: infer A, ...rest: any[]) => any
-  ? A
-  : never;
-type SecondArg<T> = T extends new (
-  arg: any,
-  arg2: infer B,
-  ...rest: any[]
-) => any
-  ? B
+// Extract key name if the first argument is required (non-object)
+type FirstArgKey<T> = RequiresFirstArg<T> extends true
+  ? keyof FirstArg<T>
   : never;
 
-// Determine if first argument is an options object
-type IsOptionsObject<T> = T extends fabric.IObjectOptions
-  ? true
-  : T extends Record<string, any>
-  ? true
-  : false;
+// Check if a class requires a first argument
+type RequiresFirstArg<T> = FirstArg<T> extends undefined | object
+  ? false
+  : true;
 
-// Check if a class requires a non-object first argument
-export type RequiresPrimitiveFirstArg<T> = FirstArg<Constructor<T>> extends
-  | string
-  | number
-  | Array<any>
-  ? true
-  : false;
+// Define a type for constructors of fabric objects.
+type FabricObjectConstructor = new (options?: any) => fabric.Object;
 
-type FabricObjectConstructors = {
-  [K in keyof typeof fabric]: (typeof fabric)[K] extends Constructor<fabric.Object>
+// Get keys that correspond to fabric object constructors.
+type FabricObjectKeys = {
+  [K in keyof typeof fabric]: (typeof fabric)[K] extends FabricObjectConstructor
     ? K
     : never;
 }[keyof typeof fabric];
 
+// Map the constructors to JSX intrinsic element types with a fixed prefix.
+// This produces keys like "fab.rect", "fab.circle", etc.
+// Define JSX intrinsic elements dynamically.
 type FabricIntrinsicElements = {
-  [K in FabricObjectConstructors as `fab.${Lowercase<K>}`]: RequiresPrimitiveFirstArg<
+  [K in FabricObjectKeys as `fab.${Lowercase<K & string>}`]: Partial<
     InstanceType<(typeof fabric)[K]>
-  > extends true
-    ? {
-        [P in keyof FirstArg<
-          Constructor<InstanceType<(typeof fabric)[K]>>
-        >]: FirstArg<Constructor<InstanceType<(typeof fabric)[K]>>>[P];
-      } & Partial<InstanceType<(typeof fabric)[K]>> & {
-          options?: SecondArg<Constructor<InstanceType<(typeof fabric)[K]>>>;
-        }
-    : Partial<InstanceType<(typeof fabric)[K]>>;
+  >;
+} & {
+  "fab.group": Partial<InstanceType<typeof fabric.Group>> & {
+    children?: ReactNode;
+  };
+};
+
+// Define the type for our proxy object. This makes properties like "triangle" available
+// and their value will be a string in the form "fab.triangle".
+type FabProxy = {
+  [K in FabricObjectKeys as Lowercase<K & string>]: `fab.${Lowercase<
+    K & string
+  >}`;
 };
 
 declare module "react" {

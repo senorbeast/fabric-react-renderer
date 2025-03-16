@@ -12,9 +12,7 @@ const Buttons = () => {
   };
 
   useFabricCanvasEvent((canvas) => {
-    canvas.on("object:added", (options) => {
-      console.log("Object added:", options);
-    });
+    canvas.on("object:added", (options) => {});
 
     canvas.on("mouse:down", (options) => {
       console.log("Object mouse down:", options);
@@ -42,6 +40,14 @@ const Buttons = () => {
     canvas?.renderAll();
   };
 
+  const logCanvasEvents = () => {
+    console.log("Canvas events:", canvas?.__eventListeners);
+  };
+
+  const logCanvasObjects = () => {
+    console.log("Current objects on canvas:", canvas?.getObjects());
+  };
+
   const renderAll = () => {
     canvas?.renderAll();
   };
@@ -51,6 +57,8 @@ const Buttons = () => {
       <button onClick={handleClick}>Log Canvas Objects</button>
       <button onClick={addRect}>Add Rect</button>
       <button onClick={updateBackground}>Update Background</button>
+      <button onClick={logCanvasObjects}>Log Canvas Objects</button>
+      <button onClick={logCanvasEvents}>Log Canvas Events</button>
       <button onClick={renderAll}>Render All</button>
     </div>
   );
