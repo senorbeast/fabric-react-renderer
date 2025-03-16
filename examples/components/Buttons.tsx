@@ -15,7 +15,7 @@ const Buttons = () => {
     canvas.on("object:added", (options) => {});
 
     canvas.on("mouse:down", (options) => {
-      console.log("Object mouse down:", options);
+      console.log("Object mouse down:", options.target?.type);
     });
   });
 
