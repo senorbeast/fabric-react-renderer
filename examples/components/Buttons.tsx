@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
-import { useFabricCanvas } from "../../src/hooks/useFabricStore/useFabricCanvas";
 import * as fabric from "fabric";
+import { useFabricCanvas } from "../../src/hooks/useFabricCanvas";
+import { useFabricCanvasEvent } from "../../src/hooks/useFabricEvent";
 
 const Buttons = () => {
   const canvas = useFabricCanvas();
@@ -10,6 +10,16 @@ const Buttons = () => {
       console.log("Current objects on canvas:", canvas.getObjects());
     }
   };
+
+  useFabricCanvasEvent((canvas) => {
+    canvas.on("object:added", (options) => {
+      console.log("Object added:", options);
+    });
+
+    canvas.on("mouse:down", (options) => {
+      console.log("Object mouse down:", options);
+    });
+  });
 
   const addRect = () => {
     fabric.FabricImage.fromURL("https://via.placeholder.com/150", (img) => {
