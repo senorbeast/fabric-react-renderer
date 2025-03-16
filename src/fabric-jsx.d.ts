@@ -1,5 +1,7 @@
 import * as fabric from "fabric";
 
+export type FabImageProps = { src: string } & fabric.IImageOptions;
+
 // Get the constructor’s first argument type
 type FirstArg<T> = T extends new (...args: infer P) => any ? P[0] : never;
 

@@ -11,7 +11,6 @@ import {
 } from "../src/components/async/FabImage2";
 
 const ReactWrapped = () => {
-  const { canvas } = useFabricCanvas();
   return (
     <>
       <fab.circle
@@ -30,12 +29,13 @@ const ReactWrapped = () => {
         onMouseMove={() => console.log("Circle mousemove")}
         onMouseOut={() => console.log("Circle mouseout")}
       />
-      {/* <FabImageWithFallback
-        canvas={canvas}
-        imageUrl="https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png"
-      /> */}
+      <FabImageWithFallback
+        left={500}
+        top={500}
+        src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png"
+      />
       {/* <FabImageWithFallback2
-        left={100}
+        left={300}
         top={100}
         src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png"
       /> */}

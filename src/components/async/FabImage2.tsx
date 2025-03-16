@@ -2,6 +2,8 @@
 import { useEffect, use, Suspense } from "react";
 import { useFabricCanvas } from "../../hooks/useFabricCanvas";
 import * as fabric from "fabric";
+import { fab } from "../../fab";
+import { FabImageProps } from "../../fabric-jsx";
 
 const imageCache = new Map<string, fabric.Image>();
 
@@ -11,7 +13,7 @@ async function loadImage(src: string): Promise<fabric.Image> {
   }
 
   return new Promise((resolve, reject) => {
-    fabric.Image.fromURL(
+    fabric.FabricImage.fromURL(
       src,
       (img) => {
         imageCache.set(src, img);
@@ -22,8 +24,6 @@ async function loadImage(src: string): Promise<fabric.Image> {
   });
 }
 
-type FabImageProps = { src: string } & fabric.IImageOptions;
-
 export function FabImage2(props: FabImageProps) {
   const canvas = useFabricCanvas();
   const { src, ...imageProps } = props;
@@ -33,27 +33,28 @@ export function FabImage2(props: FabImageProps) {
 
   useEffect(() => {
     if (!canvas) return;
+    let imageGen;
 
-    image.set(imageProps);
-    canvas.add(image);
+    loadImage(src).then((img) => {
+      imageGen = img;
+      img.set(imageProps);
+      canvas.add(img);
+    });
 
     return () => {
-      canvas.remove(image);
+      !!imageGen && canvas.remove(imageGen);
     };
-  }, [canvas, image, imageProps]);
+  }, [image, imageProps]);
 
   return null;
 }
 
-import React from "react";
-import { fab } from "../../fab";
-
 export const FabImageWithFallback2 = (props: FabImageProps) => {
   return (
-    <Suspense
-      fallback={<fab.rect width={272} height={92} fill="rgba(0,0,0,0.1)" />}
-    >
-      <FabImage2 {...props} />
-    </Suspense>
+    // <Suspense
+    //   fallback={<fab.rect width={272} height={92} fill="rgba(0,0,0,0.1)" />}
+    // >
+    <FabImage2 {...props} />
+    // </Suspense>
   );
 };

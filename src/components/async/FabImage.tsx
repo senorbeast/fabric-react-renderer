@@ -1,64 +1,32 @@
-import { useEffect, use } from "react";
+import { useEffect } from "react";
 import * as fabric from "fabric";
+import { useFabricCanvas } from "../../hooks/useFabricCanvas";
+import { FabImageProps } from "../../fabric-jsx";
 
-type FabricImageType = fabric.Image;
+const addImage = async (canvas: fabric.Canvas, props: FabImageProps) => {
+  console.log("Adding Image");
+  const { src, ...imageProps } = props;
 
-const imageCache = new Map<string, fabric.Image>();
+  const image = await fabric.FabricImage.fromURL(src);
+  image.set({ ...imageProps });
+  canvas?.add(image);
+};
 
-function FabImage({ src, canvas }: { src: string; canvas: fabric.Canvas }) {
-  // Create the resource once per source URL.
-  // const imageResource = useMemo(
-  //   () =>
-  //     createResource<FabricImageType>(() => fabric.FabricImage.fromURL(src)),
-  //   [src]
-  // );
-
-  async function loadImage(src: string): Promise<fabric.Image> {
-    if (imageCache.has(src)) {
-      return imageCache.get(src)!;
-    }
-
-    return new Promise((resolve, reject) => {
-      fabric.Image.fromURL(
-        src,
-        (img) => {
-          imageCache.set(src, img);
-          resolve(img);
-        },
-        { crossOrigin: "anonymous" }
-      );
-    });
-  }
-
-  // The read() method either returns the image or throws a promise to trigger Suspense.
-  // const image = imageResource.read();
-
-  const image = use(loadImage(src));
-
+function FabImage(props: FabImageProps) {
+  const canvas = useFabricCanvas();
   useEffect(() => {
-    if (image && canvas) {
-      image.set({ left: 100, top: 100 });
-      // canvas.add(image);
-      canvas.requestRenderAll();
-    }
-  }, [image, canvas]);
+    if (!canvas) return;
+    addImage(canvas, props);
+  }, [canvas]);
 
   // This component does not render any DOM elements itself.
   return null;
 }
 
-export function FabImageWithFallback({
-  canvas,
-  imageUrl,
-}: {
-  canvas: fabric.Canvas;
-  imageUrl: string;
-}) {
+export function FabImageWithFallback(props: FabImageProps) {
   return (
     <>
-      {/* <Suspense fallback={<fab.text text="Loading..." />}> */}
-      <FabImage src={imageUrl} canvas={canvas} />
-      {/* </Suspense> */}
+      <FabImage {...props} />
     </>
   );
 }
