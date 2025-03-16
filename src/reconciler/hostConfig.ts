@@ -61,8 +61,6 @@ const hostConfig: HostConfig<
   number,
   number
 > = {
-  supportsMutation: true,
-
   createInstance(
     type: string,
     props: any,
@@ -203,7 +201,7 @@ const hostConfig: HostConfig<
     type: string,
     oldProps: any,
     newProps: any,
-    internalInstanceHandle: any
+    finishedWork: any
   ): void {
     instance.set(updatePayload);
     instance.setCoords();
@@ -228,7 +226,7 @@ const hostConfig: HostConfig<
     rootContainer: FabricRoot,
     hostContext: {}
   ): boolean {
-    return false;
+    return true;
   },
 
   getPublicInstance(instance: FabricElement): FabricElement {
@@ -259,16 +257,22 @@ const hostConfig: HostConfig<
   cancelTimeout: clearTimeout,
   noTimeout: -1,
 
-  getRootHostContext(rootContainerInstance: FabricRoot): {} {
-    return {};
+  getRootHostContext(rootContainerInstance: FabricRoot) {
+    let rootContext = {
+      from: "from rootContext",
+    };
+    return rootContext;
   },
 
   getChildHostContext(
     parentHostContext: {},
     type: string,
     rootContainerInstance: FabricRoot
-  ): {} {
-    return {};
+  ) {
+    let context = {
+      from: "from getChildHostContext",
+    };
+    return context;
   },
 
   supportsPersistence: false,
@@ -300,13 +304,48 @@ const hostConfig: HostConfig<
   maySuspendCommit() {
     return false;
   },
+
+  startSuspendingCommit(): void {
+    // No-op: Add any logic here if needed
+  },
+
+  waitForCommitToBeReady(): void {
+    // No-op: Add any logic here if needed
+  },
+
+  finishSuspendingCommit(): void {
+    // no-op
+  },
+  finishedWork(current: any, finishedWork: FabricElement): void {
+    // no-op – this hook is called when finishing work on a fiber.
+  },
+
+  supportsMutation: function (...args) {
+    console.log("createInstance", ...args);
+    return true;
+  },
+
+  commitMount: (domElement, type, newProps, fiberNode) => {},
+
+  insertInContainerBefore: function (container, child, beforeChild) {
+    console.log("insertInContainerBefore", container, child, beforeChild);
+  },
+
+  shouldDeprioritizeSubtree: function (type, nextProps) {
+    console.log("shouldDeprioritizeSubtree", type, nextProps);
+    return !!nextProps.hidden;
+  },
 };
 
 // Create the reconciler instance.
 const FabricReconciler = Reconciler(hostConfig);
 
 // Export a render function that mounts the React element into the Fabric canvas.
-export function render(element: any, canvas: fabric.Canvas): void {
+export function render(
+  element: any,
+  canvas: fabric.Canvas,
+  callback?: () => void
+): void {
   const container: FabricRoot = { canvas };
   const root = FabricReconciler.createContainer(
     container, // containerInfo
@@ -320,5 +359,5 @@ export function render(element: any, canvas: fabric.Canvas): void {
     }, // onRecoverableError
     null // transitionCallbacks
   );
-  FabricReconciler.updateContainer(element, root, null, () => null);
+  FabricReconciler.updateContainer(element, root, null, callback);
 }

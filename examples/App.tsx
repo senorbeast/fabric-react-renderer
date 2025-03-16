@@ -1,10 +1,17 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { FabricCanvas } from "../src/Canvas";
 import ErrorBoundary from "./ErrorBoundary";
 import Buttons from "./components/Buttons";
 import { fab } from "../src/fab";
+import { useFabricCanvas } from "../src/hooks/useFabricCanvas";
+import { FabImageWithFallback } from "../src/components/async/FabImage";
+import {
+  FabImage2,
+  FabImageWithFallback2,
+} from "../src/components/async/FabImage2";
 
 const ReactWrapped = () => {
+  const { canvas } = useFabricCanvas();
   return (
     <>
       <fab.circle
@@ -23,6 +30,15 @@ const ReactWrapped = () => {
         onMouseMove={() => console.log("Circle mousemove")}
         onMouseOut={() => console.log("Circle mouseout")}
       />
+      {/* <FabImageWithFallback
+        canvas={canvas}
+        imageUrl="https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png"
+      /> */}
+      {/* <FabImageWithFallback2
+        left={100}
+        top={100}
+        src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png"
+      /> */}
 
       <fab.rect left={350} top={350} width={30} height={100} fill="green" />
       {/* <fab.blur blur={0.5} /> */}

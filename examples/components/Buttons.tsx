@@ -4,30 +4,34 @@ import { useFabricCanvasEvent } from "../../src/hooks/useFabricEvent";
 
 const Buttons = () => {
   const canvas = useFabricCanvas();
-  const handleClick = () => {
-    if (canvas) {
-      // e.g., add a new object or perform any canvas method
-      console.log("Current objects on canvas:", canvas.getObjects());
-    }
-  };
 
-  useFabricCanvasEvent((canvas) => {
-    canvas.on("object:added", (options) => {});
+  // useFabricCanvasEvent((canvas) => {
+  //   canvas.on("object:added", (options) => {});
 
-    canvas.on("mouse:down", (options) => {
-      console.log("Object mouse down:", options.target?.type);
-    });
-  });
+  //   canvas.on("mouse:down", (options) => {
+  //     console.log("Object mouse down:", options.target?.type);
+  //   });
 
-  const addRect = () => {
-    fabric.FabricImage.fromURL("https://via.placeholder.com/150", (img) => {
-      img.set({ left: 100, top: 100 });
-      canvas?.add(img);
-    });
+  //   canvas.on("mouse:up", (options) => {
+  //     console.log("Object mouse up:", options.target?.type);
+  //   });
 
-    new fabric.Polyline([], { left: 0 });
-    new fabric.Rect();
-    new fabric.Triangle();
+  //   canvas.on("mouse:over", (options) => {
+  //     console.log("Object mouse over:", options.target?.type);
+  //   });
+
+  //   canvas.on("mouse:out", (options) => {
+  //     console.log("Object mouse out:", options.target?.type);
+  //   });
+  // });
+
+  const addImage = async () => {
+    const image = await fabric.FabricImage.fromURL(
+      "https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png"
+    );
+
+    image.set({ left: 100, top: 100 });
+    canvas?.add(image);
   };
 
   const updateBackground = () => {
@@ -54,8 +58,7 @@ const Buttons = () => {
 
   return (
     <div style={{ display: "flex", gap: "1rem" }}>
-      <button onClick={handleClick}>Log Canvas Objects</button>
-      <button onClick={addRect}>Add Rect</button>
+      <button onClick={addImage}>Add Image</button>
       <button onClick={updateBackground}>Update Background</button>
       <button onClick={logCanvasObjects}>Log Canvas Objects</button>
       <button onClick={logCanvasEvents}>Log Canvas Events</button>
