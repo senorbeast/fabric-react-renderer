@@ -1,14 +1,7 @@
-import React, { Suspense } from 'react';
-import { FabricCanvas } from '../src/Canvas';
-import ErrorBoundary from './ErrorBoundary';
+import React from 'react';
+import { fab, FabricCanvas } from '../src/index';
 import Buttons from './components/Buttons';
-import { fab } from '../src/fab';
-import { useFabricCanvas } from '../src/hooks/useFabricCanvas';
 import { FabImageWithFallback } from '../src/components/async/FabImage';
-import {
-  FabImage2,
-  FabImageWithFallback2,
-} from '../src/components/async/FabImage2';
 
 const ReactWrapped = () => {
   return (
@@ -18,6 +11,7 @@ const ReactWrapped = () => {
         top={200}
         radius={50}
         fill="green"
+        //@ts-expect-error
         eventable={true}
         events={{
           onClick: () => console.log('Circle clicked'),
@@ -43,6 +37,7 @@ const ReactWrapped = () => {
       <fab.rect left={350} top={350} width={30} height={100} fill="green" />
       {/* <fab.blur blur={0.5} /> */}
       {/* <fab.grayscale mode="luminosity" /> */}
+      {/* @ts-expect-error */}
       <fab.group objects={[]}>
         <fab.circle left={450} top={350} radius={60} fill="lightgrey" />
         <fab.triangle left={350} top={50} fill="purple" />
@@ -118,6 +113,7 @@ const App: React.FC = () => {
       >
         <h1 style={{ margin: '0' }}>Fabric React Renderer</h1>
         <FabricCanvas
+          //@ts-expect-error
           width={800}
           height={600}
           style={{ border: '1px solid #ccc' }}

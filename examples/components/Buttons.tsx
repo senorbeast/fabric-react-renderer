@@ -1,7 +1,6 @@
 import * as fabric from 'fabric';
+import React from 'react';
 import { useFabricCanvas } from '../../src/hooks/useFabricCanvas';
-import { useFabricCanvasEvent } from '../../src/hooks/useFabricEvent';
-
 const Buttons = () => {
   const canvas = useFabricCanvas();
 
@@ -45,6 +44,7 @@ const Buttons = () => {
   };
 
   const logCanvasEvents = () => {
+    //@ts-expect-error
     console.log('Canvas events:', canvas?.__eventListeners);
   };
 

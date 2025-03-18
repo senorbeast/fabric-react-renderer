@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
-import { render as fabricRender } from './reconciler/hostConfig';
 import * as fabric from 'fabric';
-import { useFabricStore } from './hooks/fabricStore';
+import { useFabricStore } from '../hooks/fabricStore';
+import { render as fabricRender } from '../reconciler/hostConfig';
 
 export interface FabricCanvasProps
   extends React.HTMLAttributes<HTMLCanvasElement> {}

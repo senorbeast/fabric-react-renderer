@@ -1,4 +1,4 @@
-import { FabProxy } from './fabric-jsx';
+import { FabProxy } from '../fabric-jsx';
 
 // fab.ts
 export const fab: FabProxy = new Proxy({} as FabProxy, {
