@@ -1,15 +1,38 @@
 {
     "compilerOptions": {
-      "target": "ESNext",
-      "module": "ESNext",
-      "lib": ["DOM", "ESNext"],
-      "jsx": "react-jsx",
-      "declaration": true,
-      "outDir": "dist",
-      "strict": true,
-      "esModuleInterop": true,
-      "moduleResolution": "node",
-      "skipLibCheck": true
+      /* Base Options: */
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "ESNext",
+    // "target": "es2022",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+
+    /* Strictness */
+    "strict": false,
+    // "noUncheckedIndexedAccess": true,
+    // "noImplicitOverride": true,
+
+    /* If transpiling with TypeScript: */
+    // "module": "NodeNext",
+    "module": "ESNext",
+    "outDir": "dist",
+    "sourceMap": true,
+
+    /* AND if you're building for a library: */
+    "declaration": true,
+
+    /* AND if you're building for a library in a monorepo: */
+    "declarationMap": true,
+
+    /* Other Options: */
+    "lib": ["DOM", "ESNext"],
+    "jsx": "react-jsx",
+    "moduleResolution": "node",
     },
+
     "include": ["src", "types","examples"],
   }

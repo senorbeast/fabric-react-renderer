@@ -3,6 +3,20 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "description": "A React renderer for Fabric.js",
+  "keywords": ["fabric.js", "fabric", "react","react-renderer", "typescript"],
+  "homepage": "https://github.com/senorbeast/fabric-react-renderer",
+  "bugs": {
+    "url": "https://github.com/senorbeast/fabric-react-renderer/issues"
+  },
+  "author": "Hrishikesh Sawant <hrishikeshas99@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/senorbeast/fabric-react-renderer.git"
+  },
+  "license": "MIT",
+  "files": ["dist"],
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "dev": "tsc -w",
