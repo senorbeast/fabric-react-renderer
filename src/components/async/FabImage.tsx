@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import * as fabric from 'fabric';
-import { useFabricCanvas } from '../../hooks/useFabricCanvas';
+import { useFabricCanvas } from '../../index.js';
 
 // @ts-expect-error
 export type FabImageProps = { src: string } & fabric.IImageOptions;

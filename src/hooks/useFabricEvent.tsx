@@ -3,8 +3,8 @@
  * Manages event listener lifecycle automatically
  */
 import { useEffect } from 'react';
-import { useFabricStore } from './fabricStore';
 import * as fabric from 'fabric';
+import { useFabricStore } from './fabricStore.js';
 
 export function useFabricCanvasEvent(
   canvasEventHandler: (canvas: fabric.Canvas) => void,

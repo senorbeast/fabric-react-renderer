@@ -1,8 +1,8 @@
 // FabImage.tsx
-import { useEffect, use, Suspense } from 'react';
-import { useFabricCanvas } from '../../hooks/useFabricCanvas';
+import { useEffect, use } from 'react';
 import * as fabric from 'fabric';
-import { FabImageProps } from './FabImage';
+import { useFabricCanvas } from '../../index.js';
+import type { FabImageProps } from './FabImage.js';
 
 const imageCache = new Map<string, fabric.Image>();
 

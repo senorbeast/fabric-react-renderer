@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { createResource } from './createResource';
+import { createResource } from './createResource.js';
 
 function loadCanvasJSONResource(canvas: fabric.Canvas, json: any) {
   return createResource(

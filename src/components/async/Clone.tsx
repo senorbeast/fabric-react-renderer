@@ -1,5 +1,5 @@
 import { useMemo, useEffect } from 'react';
-import { createResource } from './createResource';
+import { createResource } from './createResource.js';
 
 function cloneObjectResource(obj: fabric.Object) {
   return createResource(async () => obj.clone(() => {}));

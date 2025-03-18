@@ -1,11 +1,12 @@
 // fabricRenderer.ts
-import Reconciler, { HostConfig } from 'react-reconciler';
+import Reconciler from 'react-reconciler';
+import type { HostConfig } from 'react-reconciler';
 import * as fabric from 'fabric';
 import {
   DiscreteEventPriority,
   ContinuousEventPriority,
   DefaultEventPriority,
-} from 'react-reconciler/constants';
+} from 'react-reconciler/constants.js';
 
 // Define our container type which wraps a Fabric.Canvas.
 export interface FabricRoot {
@@ -70,6 +71,10 @@ const hostConfig: HostConfig<
     const [prefix, elementName] = type.split('.');
     if (prefix !== 'fab') {
       throw new Error(`Invalid fabric element prefix: ${type}`);
+    }
+
+    if (elementName === undefined) {
+      throw new Error(`Invalid fabric element name: ${type}`);
     }
 
     const className = capitalize(elementName);
