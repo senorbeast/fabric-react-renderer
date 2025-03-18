@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
 import * as fabric from 'fabric';
 import { useFabricCanvas } from '../../hooks/useFabricCanvas';
-import { FabImageProps } from '../../fabric-jsx';
+
+// @ts-expect-error
+export type FabImageProps = { src: string } & fabric.IImageOptions;
 
 const addImage = async (canvas: fabric.Canvas, props: FabImageProps) => {
   console.log('Adding Image');

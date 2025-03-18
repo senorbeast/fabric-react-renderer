@@ -4,4 +4,4 @@ export { useFabricCanvas } from './hooks/useFabricCanvas';
 export { useFabricCanvasEvent } from './hooks/useFabricEvent';
 export { FabImageWithFallback } from './components/async/FabImage';
 export { fab } from './core/fab';
-export type { FabImageProps, FabProxy } from './fabric-jsx';
+export type { FabProxy } from './fabric-jsx';

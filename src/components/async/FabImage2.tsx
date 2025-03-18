@@ -2,7 +2,7 @@
 import { useEffect, use, Suspense } from 'react';
 import { useFabricCanvas } from '../../hooks/useFabricCanvas';
 import * as fabric from 'fabric';
-import { FabImageProps } from '../../fabric-jsx';
+import { FabImageProps } from './FabImage';
 
 const imageCache = new Map<string, fabric.Image>();
 
