@@ -4,7 +4,13 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "description": "A React renderer for Fabric.js",
-  "keywords": ["fabric.js", "fabric", "react","react-renderer", "typescript"],
+  "keywords": [
+    "fabric.js",
+    "fabric",
+    "react",
+    "react-renderer",
+    "typescript"
+  ],
   "homepage": "https://github.com/senorbeast/fabric-react-renderer",
   "bugs": {
     "url": "https://github.com/senorbeast/fabric-react-renderer/issues"
@@ -15,13 +21,17 @@
     "url": "git+https://github.com/senorbeast/fabric-react-renderer.git"
   },
   "license": "MIT",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "scripts": {
     "build": "tsc",
     "dev": "tsc -w",
     "vite": "vite",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "ci": "npm run build",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@types/fabric": "^5.3.10",
@@ -35,6 +45,9 @@
     "@types/react": "^19.0.0",
     "@types/react-reconciler": "^0.28.9",
     "@vitejs/plugin-react": "^4.3.4",
+    "esbuild": "^0.25.1",
+    "prettier": "^3.5.3",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.2",
     "vite": "^6.2.1"
   }
