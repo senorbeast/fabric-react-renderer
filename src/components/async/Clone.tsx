@@ -2,7 +2,7 @@ import { useMemo, useEffect } from 'react';
 import { createResource } from './createResource';
 
 function cloneObjectResource(obj: fabric.Object) {
-  return createResource<fabric.Object>(() => obj.clone());
+  return createResource(async () => obj.clone(() => {}));
 }
 
 // Then use it in a component:

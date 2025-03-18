@@ -6,7 +6,6 @@ import {
   ContinuousEventPriority,
   DefaultEventPriority,
 } from 'react-reconciler/constants';
-import { mainGetParams } from '../getParams';
 
 // Define our container type which wraps a Fabric.Canvas.
 export interface FabricRoot {
@@ -292,13 +291,15 @@ const hostConfig: HostConfig<
   getInstanceFromScope: () => null,
 
   detachDeletedInstance: () => {},
-  resolveUpdatePriority: (...args) => {
+
+  //@ts-expect-error
+  resolveUpdatePriority: () => {
     return DefaultEventPriority;
   },
-  getCurrentUpdatePriority(...args) {
+  getCurrentUpdatePriority() {
     return DefaultEventPriority;
   },
-  setCurrentUpdatePriority(...args) {
+  setCurrentUpdatePriority() {
     return DefaultEventPriority;
   },
   maySuspendCommit() {
@@ -320,10 +321,7 @@ const hostConfig: HostConfig<
     // no-op – this hook is called when finishing work on a fiber.
   },
 
-  supportsMutation: function (...args) {
-    console.log('createInstance', ...args);
-    return true;
-  },
+  supportsMutation: true,
 
   commitMount: (domElement, type, newProps, fiberNode) => {},
 
@@ -331,6 +329,7 @@ const hostConfig: HostConfig<
     console.log('insertInContainerBefore', container, child, beforeChild);
   },
 
+  //@ts-expect-error
   shouldDeprioritizeSubtree: function (type, nextProps) {
     console.log('shouldDeprioritizeSubtree', type, nextProps);
     return !!nextProps.hidden;

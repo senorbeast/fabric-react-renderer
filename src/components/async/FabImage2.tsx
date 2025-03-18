@@ -11,17 +11,7 @@ async function loadImage(src: string): Promise<fabric.Image> {
   if (imageCache.has(src)) {
     return imageCache.get(src)!;
   }
-
-  return new Promise((resolve, reject) => {
-    fabric.FabricImage.fromURL(
-      src,
-      (img) => {
-        imageCache.set(src, img);
-        resolve(img);
-      },
-      { crossOrigin: 'anonymous' },
-    );
-  });
+  return await fabric.FabricImage.fromURL(src);
 }
 
 export function FabImage2(props: FabImageProps) {
@@ -33,7 +23,7 @@ export function FabImage2(props: FabImageProps) {
 
   useEffect(() => {
     if (!canvas) return;
-    let imageGen;
+    let imageGen: fabric.Image | null = null;
 
     loadImage(src).then((img) => {
       imageGen = img;

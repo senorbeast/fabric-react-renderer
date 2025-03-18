@@ -1,6 +1,6 @@
 {
   "name": "fabric-react-renderer",
-  "version": "1.0.0",
+  "version": "0.5.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "description": "A React renderer for Fabric.js",
@@ -30,8 +30,10 @@
     "dev": "tsc -w",
     "vite": "vite",
     "prepare": "npm run build",
-    "ci": "npm run build",
-    "format": "prettier --write ."
+    "ci": "npm run build && npm run check-format",
+    "format": "prettier --write .",
+    "check-format": "prettier --check .",
+    "check-exports": "attw --pack ."
   },
   "dependencies": {
     "@types/fabric": "^5.3.10",
@@ -42,6 +44,7 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.17.4",
     "@types/react": "^19.0.0",
     "@types/react-reconciler": "^0.28.9",
     "@vitejs/plugin-react": "^4.3.4",
