@@ -1,9 +1,9 @@
 // FabImage.tsx
-import { useEffect, use, Suspense } from "react";
-import { useFabricCanvas } from "../../hooks/useFabricCanvas";
-import * as fabric from "fabric";
-import { fab } from "../../fab";
-import { FabImageProps } from "../../fabric-jsx";
+import { useEffect, use, Suspense } from 'react';
+import { useFabricCanvas } from '../../hooks/useFabricCanvas';
+import * as fabric from 'fabric';
+import { fab } from '../../fab';
+import { FabImageProps } from '../../fabric-jsx';
 
 const imageCache = new Map<string, fabric.Image>();
 
@@ -19,7 +19,7 @@ async function loadImage(src: string): Promise<fabric.Image> {
         imageCache.set(src, img);
         resolve(img);
       },
-      { crossOrigin: "anonymous" }
+      { crossOrigin: 'anonymous' },
     );
   });
 }

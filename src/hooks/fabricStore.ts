@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import * as fabric from "fabric";
+import { create } from 'zustand';
+import * as fabric from 'fabric';
 
 interface FabricStore {
   canvas: fabric.Canvas | null;

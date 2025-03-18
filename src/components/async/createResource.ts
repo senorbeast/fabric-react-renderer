@@ -1,22 +1,22 @@
 export function createResource<T>(promiseFactory: () => Promise<T>): {
   read: () => T;
 } {
-  let status: "pending" | "success" | "error" = "pending";
+  let status: 'pending' | 'success' | 'error' = 'pending';
   let result: T | any;
   const suspender = promiseFactory()
     .then((r: T) => {
-      status = "success";
+      status = 'success';
       result = r;
     })
     .catch((e: any) => {
-      status = "error";
+      status = 'error';
       result = e;
     });
   return {
     read() {
-      if (status === "pending") {
+      if (status === 'pending') {
         throw suspender; // Tells React to suspend.
-      } else if (status === "error") {
+      } else if (status === 'error') {
         throw result;
       }
       return result;

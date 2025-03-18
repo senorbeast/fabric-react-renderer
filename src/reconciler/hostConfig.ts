@@ -1,12 +1,12 @@
 // fabricRenderer.ts
-import Reconciler, { HostConfig } from "react-reconciler";
-import * as fabric from "fabric";
+import Reconciler, { HostConfig } from 'react-reconciler';
+import * as fabric from 'fabric';
 import {
   DiscreteEventPriority,
   ContinuousEventPriority,
   DefaultEventPriority,
-} from "react-reconciler/constants";
-import { mainGetParams } from "../getParams";
+} from 'react-reconciler/constants';
+import { mainGetParams } from '../getParams';
 
 // Define our container type which wraps a Fabric.Canvas.
 export interface FabricRoot {
@@ -20,15 +20,15 @@ const constructorMainPropMap: Record<
   string,
   { mainProp: string; isArray?: boolean }
 > = {
-  Group: { mainProp: "objects", isArray: true },
-  Text: { mainProp: "text" },
-  IText: { mainProp: "text" },
-  Textbox: { mainProp: "text" },
-  Polyline: { mainProp: "points", isArray: true },
-  Polygon: { mainProp: "points", isArray: true },
-  Line: { mainProp: "points", isArray: true },
-  Path: { mainProp: "path" },
-  Image: { mainProp: "src" },
+  Group: { mainProp: 'objects', isArray: true },
+  Text: { mainProp: 'text' },
+  IText: { mainProp: 'text' },
+  Textbox: { mainProp: 'text' },
+  Polyline: { mainProp: 'points', isArray: true },
+  Polygon: { mainProp: 'points', isArray: true },
+  Line: { mainProp: 'points', isArray: true },
+  Path: { mainProp: 'path' },
+  Image: { mainProp: 'src' },
 };
 
 export type FabricElement = fabric.Object;
@@ -66,10 +66,10 @@ const hostConfig: HostConfig<
     props: any,
     rootContainer: FabricRoot,
     hostContext: {},
-    internalInstanceHandle: any
+    internalInstanceHandle: any,
   ): FabricElement {
-    const [prefix, elementName] = type.split(".");
-    if (prefix !== "fab") {
+    const [prefix, elementName] = type.split('.');
+    if (prefix !== 'fab') {
       throw new Error(`Invalid fabric element prefix: ${type}`);
     }
 
@@ -107,22 +107,22 @@ const hostConfig: HostConfig<
     text: string,
     rootContainer: FabricRoot,
     hostContext: {},
-    internalInstanceHandle: any
+    internalInstanceHandle: any,
   ): never {
-    throw new Error("Text instances are not supported in Fabric renderer.");
+    throw new Error('Text instances are not supported in Fabric renderer.');
   },
 
   appendInitialChild(
     parentInstance: FabricElement,
-    child: FabricElement
+    child: FabricElement,
   ): void {
     if (parentInstance instanceof fabric.Group) {
       parentInstance.add(child);
       parentInstance.dirty = true; // Mark group as needing re-render
       parentInstance.setCoords(); // Ensure correct positioning
     } else if (
-      "add" in parentInstance &&
-      typeof parentInstance.add === "function"
+      'add' in parentInstance &&
+      typeof parentInstance.add === 'function'
     ) {
       parentInstance.add(child);
     }
@@ -130,17 +130,17 @@ const hostConfig: HostConfig<
 
   appendChild(
     parentInstance: FabricElement | FabricRoot,
-    child: FabricElement
+    child: FabricElement,
   ): void {
     if (parentInstance instanceof fabric.Group) {
       parentInstance.add(child);
       parentInstance.dirty = true;
       parentInstance.setCoords();
-    } else if ("canvas" in parentInstance) {
+    } else if ('canvas' in parentInstance) {
       (parentInstance as FabricRoot).canvas.add(child);
     } else if (
-      "add" in parentInstance &&
-      typeof parentInstance.add === "function"
+      'add' in parentInstance &&
+      typeof parentInstance.add === 'function'
     ) {
       parentInstance.add(child);
     }
@@ -152,17 +152,17 @@ const hostConfig: HostConfig<
 
   removeChild(
     parentInstance: FabricElement | FabricRoot,
-    child: FabricElement
+    child: FabricElement,
   ): void {
     if (parentInstance instanceof fabric.Group) {
       parentInstance.remove(child);
       parentInstance.dirty = true;
       parentInstance.setCoords();
-    } else if ("canvas" in parentInstance) {
+    } else if ('canvas' in parentInstance) {
       (parentInstance as FabricRoot).canvas.remove(child);
     } else if (
-      "remove" in parentInstance &&
-      typeof parentInstance.remove === "function"
+      'remove' in parentInstance &&
+      typeof parentInstance.remove === 'function'
     ) {
       parentInstance.remove(child);
     }
@@ -175,10 +175,10 @@ const hostConfig: HostConfig<
   insertBefore(
     parentInstance: FabricElement | FabricRoot,
     child: FabricElement,
-    beforeChild: FabricElement
+    beforeChild: FabricElement,
   ): void {
     // Fabric.js doesn't offer explicit ordering; simply add the child.
-    if ("canvas" in parentInstance) {
+    if ('canvas' in parentInstance) {
       (parentInstance as FabricRoot).canvas.add(child);
     }
   },
@@ -189,7 +189,7 @@ const hostConfig: HostConfig<
     oldProps: any,
     newProps: any,
     rootContainer: FabricRoot,
-    hostContext: {}
+    hostContext: {},
   ): any {
     // For this simple example, return the new props as the update payload.
     return newProps;
@@ -201,7 +201,7 @@ const hostConfig: HostConfig<
     type: string,
     oldProps: any,
     newProps: any,
-    finishedWork: any
+    finishedWork: any,
   ): void {
     instance.set(updatePayload);
     instance.setCoords();
@@ -210,7 +210,7 @@ const hostConfig: HostConfig<
   commitTextUpdate(
     textInstance: never,
     oldText: string,
-    newText: string
+    newText: string,
   ): void {
     // Not supported.
   },
@@ -224,7 +224,7 @@ const hostConfig: HostConfig<
     type: string,
     props: any,
     rootContainer: FabricRoot,
-    hostContext: {}
+    hostContext: {},
   ): boolean {
     return true;
   },
@@ -259,7 +259,7 @@ const hostConfig: HostConfig<
 
   getRootHostContext(rootContainerInstance: FabricRoot) {
     let rootContext = {
-      from: "from rootContext",
+      from: 'from rootContext',
     };
     return rootContext;
   },
@@ -267,10 +267,10 @@ const hostConfig: HostConfig<
   getChildHostContext(
     parentHostContext: {},
     type: string,
-    rootContainerInstance: FabricRoot
+    rootContainerInstance: FabricRoot,
   ) {
     let context = {
-      from: "from getChildHostContext",
+      from: 'from getChildHostContext',
     };
     return context;
   },
@@ -321,18 +321,18 @@ const hostConfig: HostConfig<
   },
 
   supportsMutation: function (...args) {
-    console.log("createInstance", ...args);
+    console.log('createInstance', ...args);
     return true;
   },
 
   commitMount: (domElement, type, newProps, fiberNode) => {},
 
   insertInContainerBefore: function (container, child, beforeChild) {
-    console.log("insertInContainerBefore", container, child, beforeChild);
+    console.log('insertInContainerBefore', container, child, beforeChild);
   },
 
   shouldDeprioritizeSubtree: function (type, nextProps) {
-    console.log("shouldDeprioritizeSubtree", type, nextProps);
+    console.log('shouldDeprioritizeSubtree', type, nextProps);
     return !!nextProps.hidden;
   },
 };
@@ -344,7 +344,7 @@ const FabricReconciler = Reconciler(hostConfig);
 export function render(
   element: any,
   canvas: fabric.Canvas,
-  callback?: () => void
+  callback?: () => void,
 ): void {
   const container: FabricRoot = { canvas };
   const root = FabricReconciler.createContainer(
@@ -353,11 +353,11 @@ export function render(
     null, // hydrationCallbacks
     false, // isStrictMode
     false, // concurrentUpdatesByDefaultOverride
-    "", // identifierPrefix
+    '', // identifierPrefix
     (error: Error) => {
       console.error(error);
     }, // onRecoverableError
-    null // transitionCallbacks
+    null, // transitionCallbacks
   );
   FabricReconciler.updateContainer(element, root, null, callback);
 }

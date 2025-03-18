@@ -11,5 +11,5 @@
     "moduleResolution": "node",
     "skipLibCheck": true
   },
-  "include": ["src", "types","examples"],
+  "include": ["src", "types", "examples"]
 }

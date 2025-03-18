@@ -1,10 +1,10 @@
-import { useEffect } from "react";
-import * as fabric from "fabric";
-import { useFabricCanvas } from "../../hooks/useFabricCanvas";
-import { FabImageProps } from "../../fabric-jsx";
+import { useEffect } from 'react';
+import * as fabric from 'fabric';
+import { useFabricCanvas } from '../../hooks/useFabricCanvas';
+import { FabImageProps } from '../../fabric-jsx';
 
 const addImage = async (canvas: fabric.Canvas, props: FabImageProps) => {
-  console.log("Adding Image");
+  console.log('Adding Image');
   const { src, ...imageProps } = props;
 
   const image = await fabric.FabricImage.fromURL(src);

@@ -2,7 +2,7 @@
  * Type extensions for Fabric.js React components
  * Provides TypeScript support for JSX elements
  */
-import { fabric } from "fabric";
+import { fabric } from 'fabric';
 
 declare global {
   namespace JSX {
@@ -23,6 +23,6 @@ type FabricEvents<T extends fabric.Object> = {
   [K in keyof T as K extends `on${string}` ? K : never]?: T[K];
 } & {
   [K in keyof fabric.CanvasEvents as `on${string}`]?: (
-    event: fabric.IEvent
+    event: fabric.IEvent,
   ) => void;
 };

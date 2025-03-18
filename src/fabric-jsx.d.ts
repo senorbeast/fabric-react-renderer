@@ -1,4 +1,4 @@
-import * as fabric from "fabric";
+import * as fabric from 'fabric';
 
 export type FabImageProps = { src: string } & fabric.IImageOptions;
 
@@ -6,14 +6,12 @@ export type FabImageProps = { src: string } & fabric.IImageOptions;
 type FirstArg<T> = T extends new (...args: infer P) => any ? P[0] : never;
 
 // Extract key name if the first argument is required (non-object)
-type FirstArgKey<T> = RequiresFirstArg<T> extends true
-  ? keyof FirstArg<T>
-  : never;
+type FirstArgKey<T> =
+  RequiresFirstArg<T> extends true ? keyof FirstArg<T> : never;
 
 // Check if a class requires a first argument
-type RequiresFirstArg<T> = FirstArg<T> extends undefined | object
-  ? false
-  : true;
+type RequiresFirstArg<T> =
+  FirstArg<T> extends undefined | object ? false : true;
 
 // Define a type for constructors of fabric objects.
 type FabricObjectConstructor = new (options?: any) => fabric.Object;
@@ -33,7 +31,7 @@ type FabricIntrinsicElements = {
     InstanceType<(typeof fabric)[K]>
   >;
 } & {
-  "fab.group": Partial<InstanceType<typeof fabric.Group>> & {
+  'fab.group': Partial<InstanceType<typeof fabric.Group>> & {
     children?: ReactNode;
   };
 };
@@ -46,7 +44,7 @@ type FabProxy = {
   >}`;
 };
 
-declare module "react" {
+declare module 'react' {
   namespace JSX {
     interface IntrinsicElements extends FabricIntrinsicElements {}
   }

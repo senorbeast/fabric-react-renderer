@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { createResource } from "./createResource";
+import { useMemo } from 'react';
+import { createResource } from './createResource';
 
 function loadCanvasJSONResource(canvas: fabric.Canvas, json: any) {
   return createResource(
@@ -9,14 +9,14 @@ function loadCanvasJSONResource(canvas: fabric.Canvas, json: any) {
           // Optionally update object coordinates or any additional processing.
           resolve(canvas);
         });
-      })
+      }),
   );
 }
 
 function CanvasLoader({ canvas, json }: { canvas: fabric.Canvas; json: any }) {
   const canvasResource = useMemo(
     () => loadCanvasJSONResource(canvas, json),
-    [canvas, json]
+    [canvas, json],
   );
   // This will suspend until the canvas is loaded.
   const loadedCanvas = canvasResource.read();
