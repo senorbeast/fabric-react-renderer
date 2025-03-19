@@ -36,7 +36,7 @@ type FabricIntrinsicElements = {
 
 // Define the type for our proxy object. This makes properties like "triangle" available
 // and their value will be a string in the form "fab.triangle".
-type FabProxy = {
+export type FabProxy = {
   [K in FabricObjectKeys as Lowercase<K & string>]: `fab.${Lowercase<
     K & string
   >}`;
