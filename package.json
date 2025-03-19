@@ -1,6 +1,6 @@
 {
   "name": "fabric-react-renderer",
-  "version": "0.5.0",
+  "version": "0.1.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "description": "A React renderer for Fabric.js",
@@ -20,7 +20,8 @@
     ".": {
       "import": "./dist/index.js",
       "require": "./dist/index.cjs",
-      "default": "./dist/index.cjs"
+      "default": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
     }
   },
   "author": "Hrishikesh Sawant <hrishikeshas99@gmail.com>",
@@ -37,11 +38,13 @@
     "build": "tsc",
     "dev": "tsc -w",
     "vite": "vite",
-    "prepare": "npm run build",
-    "ci": "npm run build && npm run check-format",
+    "prepare": "pnpm build",
+    "ci": "pnpm build && pnpm check-format && cp src/fabric-jsx.d.ts dist/ && pnpm check-exports",
+    "local-release": "changeset version && changeset publish",
+    "prepublishOnly": "npm run ci",
     "format": "prettier --write .",
     "check-format": "prettier --check .",
-    "check-exports": "attw --pack ."
+    "check-exports": "attw --pack . --ignore-rules=cjs-resolves-to-esm"
   },
   "dependencies": {
     "@types/fabric": "^5.3.10",
@@ -53,6 +56,7 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.4",
+    "@changesets/cli": "^2.28.1",
     "@types/react": "^19.0.0",
     "@types/react-reconciler": "^0.28.9",
     "@vitejs/plugin-react": "^4.3.4",
