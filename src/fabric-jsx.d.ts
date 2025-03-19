@@ -1,21 +1,24 @@
+// src/fabric-jsx.d.ts
 import type * as fabric from 'fabric';
 
 // Get the constructor’s first argument type
-type FirstArg<T> = T extends new (...args: infer P) => any ? P[0] : never;
+export type FirstArg<T> = T extends new (...args: infer P) => any
+  ? P[0]
+  : never;
 
 // Extract key name if the first argument is required (non-object)
-type FirstArgKey<T> =
+export type FirstArgKey<T> =
   RequiresFirstArg<T> extends true ? keyof FirstArg<T> : never;
 
 // Check if a class requires a first argument
-type RequiresFirstArg<T> =
+export type RequiresFirstArg<T> =
   FirstArg<T> extends undefined | object ? false : true;
 
 // Define a type for constructors of fabric objects.
-type FabricObjectConstructor = new (options?: any) => fabric.Object;
+export type FabricObjectConstructor = new (options?: any) => fabric.Object;
 
 // Get keys that correspond to fabric object constructors.
-type FabricObjectKeys = {
+export type FabricObjectKeys = {
   [K in keyof typeof fabric]: (typeof fabric)[K] extends FabricObjectConstructor
     ? K
     : never;
@@ -24,7 +27,7 @@ type FabricObjectKeys = {
 // Map the constructors to JSX intrinsic element types with a fixed prefix.
 // This produces keys like "fab.rect", "fab.circle", etc.
 // Define JSX intrinsic elements dynamically.
-type FabricIntrinsicElements = {
+export type FabricIntrinsicElements = {
   [K in FabricObjectKeys as `fab.${Lowercase<K & string>}`]: Partial<
     InstanceType<(typeof fabric)[K]>
   >;

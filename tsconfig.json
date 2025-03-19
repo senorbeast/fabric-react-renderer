@@ -1,3 +1,5 @@
+//tsconfig.json
+
 {
   "compilerOptions": {
     /* Base Options: */
@@ -26,7 +28,11 @@
     "declaration": true,
 
     /* AND if you're building for a library in a monorepo: */
-    "declarationMap": true
+    "declarationMap": true,
+
+    // "moduleResolution": "bundler", // Ensures correct import resolution
+    "allowSyntheticDefaultImports": true, // Helps with interop issues
+    "types": ["fabric", "react"]
   },
-  "include": ["src", "types"]
+  "include": ["src", "src/fabric-jsx.d.ts"]
 }
