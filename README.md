@@ -10,6 +10,19 @@ You can install the package via npm:
 
 `pnpm install fabric-react-renderer`
 
+<table>
+<tbody>
+  <tr>
+    <td>Let's make a re-usable component that has its own state, reacts to user-input and participates in the render-loop. (<a href="https://codesandbox.io/p/github/senorbeast/frr-eg/main">live demo</a>).</td>
+<!--     <td>
+      <a href="https://codesandbox.io/p/github/senorbeast/frr-eg/main">
+        <img src="/docs/basic-app.gif" />
+      </a>
+    </td> -->
+  </tr>
+</tbody>
+</table>
+
 ## Usage
 
 ```tsx
