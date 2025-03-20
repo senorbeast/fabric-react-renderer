@@ -1,5 +1,7 @@
 # Fabric React Renderer
 
+[Not Production Ready]
+
 A React renderer for Fabric.js that allows you to render Fabric.js components as React components.
 
 ## Installation
