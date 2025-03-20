@@ -11,9 +11,9 @@ You can install the package via npm:
 ## Usage
 
 ```tsx
-import { fab, FabricCanvas } from "fabric-react-renderer";
+import { fab, FabricCanvas } from 'fabric-react-renderer';
 
-import "./styles.css";
+import './styles.css';
 
 export default function App() {
   return (
@@ -25,9 +25,7 @@ export default function App() {
     </div>
   );
 }
-
 ```
-
 
 fabric-react-renderer is a <a href="https://reactjs.org/docs/codebase-overview.html#renderers">React renderer</a> for fabricjs.
 
@@ -46,6 +44,5 @@ No. There is no overhead. Components render outside of React. It outperforms fab
 #### Can it keep up with frequent feature updates to fabricjs?
 
 Yes. It merely expresses fabricjs in JSX, `<fab.rect />` dynamically turns into `new fabric.Rect()`. If a new fabricjs version adds, removes or changes features, it will be available to you instantly without depending on updates to this library.
-
 
 Inspired by <a href="https://github.com/pmndrs/react-three-fiber">@react-three/fiber</a>
