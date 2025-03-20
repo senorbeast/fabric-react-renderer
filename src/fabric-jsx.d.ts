@@ -1,5 +1,6 @@
 // src/fabric-jsx.d.ts
 import type * as fabric from 'fabric';
+import type { ReactNode } from 'react';
 
 // Get the constructor’s first argument type
 export type FirstArg<T> = T extends new (...args: infer P) => any
