@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import * as fabric from 'fabric';
 import { fab, useFabricCanvas } from '../../index.js';
+import { useFabricStore } from '../../hooks/fabricStore.js';
 
 //@ts-ignore
 export type FabImageProps = { src: string } & fabric.IImageOptions;
@@ -32,6 +33,7 @@ function FabImage({
   const imageRef = useRef<fabric.Image | null>(null);
   const isMounted = useRef(true);
 
+  // We need to use useEffect, so we can cleanup on unmount
   useEffect(() => {
     if (!canvas) return;
 
@@ -62,35 +64,9 @@ function FabImage({
   return null;
 }
 
-function FabImageWOuE({
-  props,
-  setLoaded,
-}: {
-  props: FabImageProps;
-  setLoaded: (loaded: boolean) => void;
-}) {
-  const canvas = useFabricCanvas();
-  const hasAdded = useRef(false);
-
-  if (!canvas) return null;
-
-  if (!hasAdded.current) {
-    hasAdded.current = true;
-    addImage(canvas, props, setLoaded);
-  }
-
-  return null;
-}
-
-export function FabImageWithFallback(props: FabImageProps) {
-  const [loaded, setLoaded] = useState(false); // Local state for each image
-  useEffect(() => {
-    console.log('FabImageWithFallback mounted');
-
-    return () => {
-      console.log('FabImageWithFallback unmounted');
-    };
-  }, []);
+function FabImageWithFallback(props: FabImageProps) {
+  const [loaded, setLoaded] = useState(false);
+  console.log('FabImageWithFallback', loaded);
 
   return (
     <>
@@ -102,7 +78,12 @@ export function FabImageWithFallback(props: FabImageProps) {
           top={props.top}
         />
       )}
-      <FabImageWOuE props={props} setLoaded={setLoaded} />
+      <FabImage props={props} setLoaded={setLoaded} />
     </>
   );
+}
+
+export function FabImageWrapper(props: FabImageProps) {
+  const showImage = useFabricStore((state) => state.showImage);
+  return showImage ? <FabImageWithFallback {...props} /> : null;
 }

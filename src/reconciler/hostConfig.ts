@@ -342,7 +342,7 @@ const hostConfig: HostConfig<
 };
 
 // Create the reconciler instance.
-const FabricReconciler = Reconciler(hostConfig);
+export const FabricReconciler = Reconciler(hostConfig);
 
 // Export a render function that mounts the React element into the Fabric canvas.
 export function render(

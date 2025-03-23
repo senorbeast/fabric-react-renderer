@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import { fab, FabImageWithFallback, FabricCanvas } from '../src/index';
+import { fab, FabricCanvas } from '../src/index';
 import Buttons from './components/Buttons';
-import { FabImageWithFallback2 } from '../src/components/async/FabImage2';
+import { FabImageWrapper } from '../src/components/async/FabImage';
 
 const ReactWrapped = () => {
   useEffect(() => {
@@ -30,7 +30,7 @@ const ReactWrapped = () => {
         onMouseMove={() => console.log('Circle mousemove')}
         onMouseOut={() => console.log('Circle mouseout')}
       />
-      <FabImageWithFallback
+      <FabImageWrapper
         left={500}
         top={500}
         src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png"

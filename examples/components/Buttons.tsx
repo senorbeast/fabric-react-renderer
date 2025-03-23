@@ -1,8 +1,11 @@
 import * as fabric from 'fabric';
 import React from 'react';
 import { useFabricCanvas } from '../../src/hooks/useFabricCanvas';
+import { useFabricStore } from '../../src/hooks/fabricStore';
 const Buttons = () => {
   const canvas = useFabricCanvas();
+  const showImage = useFabricStore((state) => state.showImage);
+  const toggleImage = useFabricStore((state) => state.action.toggleImage);
 
   // useFabricCanvasEvent((canvas) => {
   //   canvas.on("object:added", (options) => {});
@@ -52,6 +55,10 @@ const Buttons = () => {
     console.log('Current objects on canvas:', canvas?.getObjects());
   };
 
+  const toggleImageVisibility = () => {
+    toggleImage();
+  };
+
   const renderAll = () => {
     canvas?.renderAll();
   };
@@ -63,6 +70,10 @@ const Buttons = () => {
       <button onClick={logCanvasObjects}>Log Canvas Objects</button>
       <button onClick={logCanvasEvents}>Log Canvas Events</button>
       <button onClick={renderAll}>Render All</button>
+      <button onClick={toggleImageVisibility}>
+        <p>Toggle Image:</p>
+        <p>{showImage.valueOf()}</p>
+      </button>
     </div>
   );
 };
