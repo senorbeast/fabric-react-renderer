@@ -1,9 +1,16 @@
-import React from 'react';
-import { fab, FabricCanvas } from '../src/index';
+import React, { useEffect } from 'react';
+import { fab, FabImageWithFallback, FabricCanvas } from '../src/index';
 import Buttons from './components/Buttons';
-import { FabImageWithFallback } from '../src/components/async/FabImage';
+import { FabImageWithFallback2 } from '../src/components/async/FabImage2';
 
 const ReactWrapped = () => {
+  useEffect(() => {
+    console.log('React in FC mounted');
+
+    return () => {
+      console.log('React in FC unmounted');
+    };
+  }, []);
   return (
     <>
       <fab.circle
@@ -94,6 +101,14 @@ const ReactWrapped = () => {
 export {};
 
 const App: React.FC = () => {
+  useEffect(() => {
+    console.log('App mounted');
+
+    return () => {
+      console.log('App unmounted');
+    };
+  }, []);
+
   return (
     <div
       style={{

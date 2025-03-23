@@ -15,6 +15,8 @@ export const FabricCanvas: React.FC<FabricCanvasProps> = ({
   const { setCanvas } = useFabricStore();
 
   useEffect(() => {
+    console.log('FabricCanvas mounted');
+
     if (canvasRef.current) {
       const fabricCanvas = new fabric.Canvas(canvasRef.current);
       // Set the canvas in the store so that it can be accessed globally.
@@ -25,6 +27,8 @@ export const FabricCanvas: React.FC<FabricCanvasProps> = ({
     return () => {
       // Optionally reset the canvas in the store on unmount.
       fabricCanvasRef.current?.dispose();
+      console.log('FabricCanvas unmounted');
+
       setCanvas(null);
     };
   }, [children]);
