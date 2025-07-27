@@ -1,12 +1,7 @@
-// fabricRenderer.ts
 import Reconciler from 'react-reconciler';
 import type { HostConfig } from 'react-reconciler';
 import * as fabric from 'fabric';
-import {
-  DiscreteEventPriority,
-  ContinuousEventPriority,
-  DefaultEventPriority,
-} from 'react-reconciler/constants.js';
+import { DefaultEventPriority } from 'react-reconciler/constants.js';
 
 // Define our container type which wraps a Fabric.Canvas.
 export interface FabricRoot {
@@ -14,105 +9,61 @@ export interface FabricRoot {
 }
 
 function capitalize(str: string): string {
+  if (!str) return '';
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
-const constructorMainPropMap: Record<
-  string,
-  { mainProp: string; isArray?: boolean }
-> = {
-  Group: { mainProp: 'objects', isArray: true },
-  Text: { mainProp: 'text' },
-  IText: { mainProp: 'text' },
-  Textbox: { mainProp: 'text' },
-  Polyline: { mainProp: 'points', isArray: true },
-  Polygon: { mainProp: 'points', isArray: true },
-  Line: { mainProp: 'points', isArray: true },
-  Path: { mainProp: 'path' },
-  Image: { mainProp: 'src' },
-};
 
-export type FabricElement = fabric.Object;
-// Here we supply all 13 type arguments for HostConfig:
-// 1. Type: our element names (string)
-// 2. Props: any
-// 3. Container: FabricRoot
-// 4. Instance: FabricElement
-// 5. TextInstance: never (we don't support text nodes)
-// 6. SuspenseInstance: never
-// 7. HydratableInstance: never
-// 8. PublicInstance: FabricElement (same as instance)
-// 9. HostContext: an empty object ({}), we don't use it here
-// 10. UpdatePayload: any (we pass new props directly)
-// 11. ChildSet: any
-// 12. TimeoutHandle: number (from setTimeout)
-// 13. NoTimeout: number
+type FabricElement = fabric.Object;
+type Props = Record<string, any>;
+type UpdatePayload = Record<string, any>;
+
 const hostConfig: HostConfig<
   string,
-  any,
+  Props,
   FabricRoot,
   FabricElement,
-  never,
-  never,
-  never,
-  FabricElement,
-  {},
-  any,
-  any,
-  number,
-  number
+  never, // TextInstance
+  never, // SuspenseInstance
+  never, // HydratableInstance
+  FabricElement, // PublicInstance
+  object, // HostContext
+  UpdatePayload,
+  any, // ChildSet
+  number, // TimeoutHandle
+  number // NoTimeout
 > = {
   createInstance(
     type: string,
-    props: any,
+    props: Props,
     rootContainer: FabricRoot,
-    hostContext: {},
+    hostContext: object,
     internalInstanceHandle: any,
   ): FabricElement {
-    const [prefix, elementName] = type.split('.');
-    if (prefix !== 'fab') {
-      throw new Error(`Invalid fabric element prefix: ${type}`);
+    const { instance, ...restProps } = props;
+    if (instance) {
+      instance.set(restProps);
+      return instance;
     }
 
-    if (elementName === undefined) {
-      throw new Error(`Invalid fabric element name: ${type}`);
+    const [prefix, elementName] = type.split('.');
+    if (prefix !== 'fab') {
+      throw new Error(`Invalid fabric element prefix: ${type}. Must be 'fab'.`);
+    }
+    if (!elementName) {
+      throw new Error(`Invalid fabric element name: ${type}.`);
     }
 
     const className = capitalize(elementName);
-
     const FabricClass = (fabric as any)[className];
+
     if (!FabricClass) {
       throw new Error(`Fabric.js class not found: ${className}`);
     }
 
-    const config = constructorMainPropMap[className];
-
-    if (config) {
-      const { mainProp, isArray } = config;
-      const mainValue = props[mainProp];
-
-      if (mainValue === undefined) {
-        throw new Error(`Missing required prop '${mainProp}' for ${className}`);
-      }
-
-      const { [mainProp]: _, ...options } = props;
-
-      if (isArray && !Array.isArray(mainValue)) {
-        throw new Error(`Prop '${mainProp}' must be an array for ${className}`);
-      }
-
-      return new FabricClass(mainValue, options);
-    }
-
-    // Handle normal object constructors
-    return new FabricClass(props);
+    return new FabricClass(restProps);
   },
 
-  createTextInstance(
-    text: string,
-    rootContainer: FabricRoot,
-    hostContext: {},
-    internalInstanceHandle: any,
-  ): never {
+  createTextInstance(): never {
     throw new Error('Text instances are not supported in Fabric renderer.');
   },
 
@@ -122,13 +73,6 @@ const hostConfig: HostConfig<
   ): void {
     if (parentInstance instanceof fabric.Group) {
       parentInstance.add(child);
-      parentInstance.dirty = true; // Mark group as needing re-render
-      parentInstance.setCoords(); // Ensure correct positioning
-    } else if (
-      'add' in parentInstance &&
-      typeof parentInstance.add === 'function'
-    ) {
-      parentInstance.add(child);
     }
   },
 
@@ -136,16 +80,9 @@ const hostConfig: HostConfig<
     parentInstance: FabricElement | FabricRoot,
     child: FabricElement,
   ): void {
-    if (parentInstance instanceof fabric.Group) {
-      parentInstance.add(child);
-      parentInstance.dirty = true;
-      parentInstance.setCoords();
-    } else if ('canvas' in parentInstance) {
-      (parentInstance as FabricRoot).canvas.add(child);
-    } else if (
-      'add' in parentInstance &&
-      typeof parentInstance.add === 'function'
-    ) {
+    if ('canvas' in parentInstance) {
+      parentInstance.canvas.add(child);
+    } else if (parentInstance instanceof fabric.Group) {
       parentInstance.add(child);
     }
   },
@@ -158,16 +95,9 @@ const hostConfig: HostConfig<
     parentInstance: FabricElement | FabricRoot,
     child: FabricElement,
   ): void {
-    if (parentInstance instanceof fabric.Group) {
-      parentInstance.remove(child);
-      parentInstance.dirty = true;
-      parentInstance.setCoords();
-    } else if ('canvas' in parentInstance) {
-      (parentInstance as FabricRoot).canvas.remove(child);
-    } else if (
-      'remove' in parentInstance &&
-      typeof parentInstance.remove === 'function'
-    ) {
+    if ('canvas' in parentInstance) {
+      parentInstance.canvas.remove(child);
+    } else if (parentInstance instanceof fabric.Group) {
       parentInstance.remove(child);
     }
   },
@@ -181,55 +111,49 @@ const hostConfig: HostConfig<
     child: FabricElement,
     beforeChild: FabricElement,
   ): void {
-    // Fabric.js doesn't offer explicit ordering; simply add the child.
-    if ('canvas' in parentInstance) {
-      (parentInstance as FabricRoot).canvas.add(child);
+    const container = 'canvas' in parentInstance ? parentInstance.canvas : parentInstance;
+    if (container instanceof fabric.Group || container instanceof fabric.Canvas) {
+      const index = container.getObjects().indexOf(beforeChild);
+      if (index !== -1) {
+        container.insertAt(index, child);
+      } else {
+        container.add(child);
+      }
     }
   },
 
   prepareUpdate(
     instance: FabricElement,
     type: string,
-    oldProps: any,
-    newProps: any,
-    rootContainer: FabricRoot,
-    hostContext: {},
-  ): any {
-    // For this simple example, return the new props as the update payload.
-    return newProps;
+    oldProps: Props,
+    newProps: Props,
+  ): UpdatePayload | null {
+    const payload: UpdatePayload = {};
+    for (const key in newProps) {
+      if (key !== 'children' && newProps[key] !== oldProps[key]) {
+        payload[key] = newProps[key];
+      }
+    }
+    return Object.keys(payload).length > 0 ? payload : null;
   },
 
   commitUpdate(
     instance: FabricElement,
-    updatePayload: any,
-    type: string,
-    oldProps: any,
-    newProps: any,
-    finishedWork: any,
+    updatePayload: UpdatePayload,
   ): void {
     instance.set(updatePayload);
     instance.setCoords();
   },
 
-  commitTextUpdate(
-    textInstance: never,
-    oldText: string,
-    newText: string,
-  ): void {
+  commitTextUpdate(): void {
     // Not supported.
   },
 
-  resetTextContent(instance: FabricElement): void {
+  resetTextContent(): void {
     // Not supported.
   },
 
-  finalizeInitialChildren(
-    instance: FabricElement,
-    type: string,
-    props: any,
-    rootContainer: FabricRoot,
-    hostContext: {},
-  ): boolean {
+  finalizeInitialChildren(): boolean {
     return true;
   },
 
@@ -237,21 +161,20 @@ const hostConfig: HostConfig<
     return instance;
   },
 
-  prepareForCommit(containerInfo: FabricRoot): Record<string, any> | null {
-    // No preparation needed—return null.
+  prepareForCommit(): Record<string, any> | null {
     return null;
   },
 
   resetAfterCommit(containerInfo: FabricRoot): void {
-    containerInfo.canvas.renderAll();
+    // Batch renders for better performance
+    requestAnimationFrame(() => containerInfo.canvas.renderAll());
   },
 
-  shouldSetTextContent(type: string, props: any): boolean {
+  shouldSetTextContent(): boolean {
     return false;
   },
 
   clearContainer(container: FabricRoot): void {
-    // Check if the underlying context exists before clearing.
     if (container.canvas.contextContainer) {
       container.canvas.clear();
     }
@@ -261,107 +184,26 @@ const hostConfig: HostConfig<
   cancelTimeout: clearTimeout,
   noTimeout: -1,
 
-  getRootHostContext(rootContainerInstance: FabricRoot) {
-    let rootContext = {
-      from: 'from rootContext',
-    };
-    return rootContext;
+  getRootHostContext() {
+    return {};
   },
 
-  getChildHostContext(
-    parentHostContext: {},
-    type: string,
-    rootContainerInstance: FabricRoot,
-  ) {
-    let context = {
-      from: 'from getChildHostContext',
-    };
-    return context;
-  },
-
-  supportsPersistence: false,
-  supportsHydration: false,
-  preparePortalMount: function (containerInfo: FabricRoot): void {},
-
-  isPrimaryRenderer: false,
-  getCurrentEventPriority: function (): Reconciler.Lane {
-    return 0;
-  },
-  getInstanceFromNode: () => null,
-
-  beforeActiveInstanceBlur: () => {},
-  afterActiveInstanceBlur: () => {},
-
-  prepareScopeUpdate: () => {},
-  getInstanceFromScope: () => null,
-
-  detachDeletedInstance: () => {},
-
-  //@ts-expect-error
-  resolveUpdatePriority: () => {
-    return DefaultEventPriority;
-  },
-  getCurrentUpdatePriority() {
-    return DefaultEventPriority;
-  },
-  setCurrentUpdatePriority() {
-    return DefaultEventPriority;
-  },
-  maySuspendCommit() {
-    return false;
-  },
-
-  startSuspendingCommit(): void {
-    // No-op: Add any logic here if needed
-  },
-
-  waitForCommitToBeReady(): void {
-    // No-op: Add any logic here if needed
-  },
-
-  finishSuspendingCommit(): void {
-    // no-op
-  },
-  finishedWork(current: any, finishedWork: FabricElement): void {
-    // no-op – this hook is called when finishing work on a fiber.
+  getChildHostContext() {
+    return {};
   },
 
   supportsMutation: true,
+  supportsPersistence: false,
+  supportsHydration: false,
+  isPrimaryRenderer: false,
 
-  commitMount: (domElement, type, newProps, fiberNode) => {},
-
-  insertInContainerBefore: function (container, child, beforeChild) {
-    console.log('insertInContainerBefore', container, child, beforeChild);
-  },
-
-  //@ts-expect-error
-  shouldDeprioritizeSubtree: function (type, nextProps) {
-    console.log('shouldDeprioritizeSubtree', type, nextProps);
-    return !!nextProps.hidden;
-  },
+  getCurrentEventPriority: () => DefaultEventPriority,
+  getInstanceFromNode: () => null,
+  beforeActiveInstanceBlur: () => {},
+  afterActiveInstanceBlur: () => {},
+  prepareScopeUpdate: () => {},
+  getInstanceFromScope: () => null,
+  detachDeletedInstance: () => {},
 };
 
-// Create the reconciler instance.
 export const FabricReconciler = Reconciler(hostConfig);
-
-// Export a render function that mounts the React element into the Fabric canvas.
-export function render(
-  element: any,
-  canvas: fabric.Canvas,
-  callback?: () => void,
-): void {
-  const container: FabricRoot = { canvas };
-  const root = FabricReconciler.createContainer(
-    container, // containerInfo
-    1, // tag (e.g. LegacyRoot)
-    null, // hydrationCallbacks
-    false, // isStrictMode
-    false, // concurrentUpdatesByDefaultOverride
-    '', // identifierPrefix
-    (error: Error) => {
-      console.error(error);
-    }, // onRecoverableError
-    null, // transitionCallbacks
-  );
-  FabricReconciler.updateContainer(element, root, null, callback);
-}

@@ -1,21 +1,29 @@
-/**
- * Custom hook for attaching Fabric.js event handlers
- * Manages event listener lifecycle automatically
- */
 import { useEffect } from 'react';
-import * as fabric from 'fabric';
-import { useFabricStore } from './fabricStore.js';
+import { useFabricCanvas } from './useFabricCanvas.js';
+import type * as fabric from 'fabric';
 
-export function useFabricCanvasEvent(
-  canvasEventHandler: (canvas: fabric.Canvas) => void,
+/**
+ * Custom hook for attaching event handlers to the Fabric.js canvas.
+ *
+ * @param eventName The name of the fabric event (e.g., 'mouse:down', 'object:moving').
+ * @param eventHandler A memoized callback function (useCallback) to handle the event.
+ */
+export function useFabricCanvasEvent<T extends fabric.IEvent>(
+  eventName: string,
+  eventHandler: (e: T) => void,
 ) {
-  const canvas = useFabricStore((state) => state.canvas);
+  const canvas = useFabricCanvas();
 
   useEffect(() => {
-    console.log('Adding canvas event handler');
-    canvas && canvasEventHandler(canvas);
+    if (!canvas) return;
+
+    // The type assertion is necessary because Fabric.js's event system is not strongly typed.
+    const handler = eventHandler as (e: fabric.IEvent) => void;
+
+    canvas.on(eventName, handler);
+
     return () => {
-      canvas?.dispose();
+      canvas.off(eventName, handler);
     };
-  }, [canvas]);
+  }, [canvas, eventName, eventHandler]);
 }

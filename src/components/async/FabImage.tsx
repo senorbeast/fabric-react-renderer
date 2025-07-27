@@ -1,89 +1,64 @@
-import { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import * as fabric from 'fabric';
-import { fab, useFabricCanvas } from '../../index.js';
-import { useFabricStore } from '../../hooks/fabricStore.js';
+import { fab } from '../../core/fab.js';
 
-//@ts-ignore
-export type FabImageProps = { src: string } & fabric.IImageOptions;
+export type FabImageProps = {
+  src: string;
+  onError?: (error: Error) => void;
+  fallback?: React.ReactNode;
+} & fabric.IImageOptions;
 
-const addImage = async (
-  canvas: fabric.Canvas,
-  props: FabImageProps,
-  setLoaded: (loaded: boolean) => void,
-): Promise<fabric.FabricImage> => {
-  const { src, ...imageProps } = props;
-  await new Promise((resolve) => setTimeout(resolve, 3000));
+export const FabImage: React.FC<FabImageProps> = ({
+  src,
+  onError,
+  fallback,
+  ...imageProps
+}) => {
+  const [image, setImage] = useState<fabric.Image | null>(null);
+  const [error, setError] = useState<Error | null>(null);
 
-  const image = await fabric.Image.fromURL(src);
-  image.set({ ...imageProps });
-  canvas.add(image);
-
-  setLoaded(true);
-  return image;
-};
-
-function FabImage({
-  props,
-  setLoaded,
-}: {
-  props: FabImageProps;
-  setLoaded: (loaded: boolean) => void;
-}) {
-  const canvas = useFabricCanvas();
-  const imageRef = useRef<fabric.Image | null>(null);
-  const isMounted = useRef(true);
-
-  // We need to use useEffect, so we can cleanup on unmount
   useEffect(() => {
-    if (!canvas) return;
-
-    const addImageToCanvas = async () => {
-      try {
-        const image = await addImage(canvas, props, setLoaded);
-        if (isMounted.current) {
-          imageRef.current = image;
+    let isMounted = true;
+    fabric.Image.fromURL(src)
+      .then((img) => {
+        if (isMounted) {
+          setImage(img);
         }
-      } catch (error) {
-        console.error('Error loading image:', error);
-      }
-    };
-
-    console.log('Adding image');
-    addImageToCanvas();
+      })
+      .catch((err) => {
+        if (isMounted) {
+          setError(err);
+          if (onError) {
+            onError(err);
+          }
+        }
+      });
 
     return () => {
-      isMounted.current = false;
-      if (imageRef.current && canvas) {
-        console.log('Removing image');
-        canvas.remove(imageRef.current);
-        canvas.renderAll();
-      }
+      isMounted = false;
     };
-  }, [canvas, props, setLoaded]);
+  }, [src, onError]);
 
-  return null;
-}
+  if (error) {
+    return fallback || null;
+  }
 
-function FabImageWithFallback(props: FabImageProps) {
-  const [loaded, setLoaded] = useState(false);
-  console.log('FabImageWithFallback', loaded);
-
-  return (
-    <>
-      {!loaded && (
+  if (!image) {
+    return (
+      fallback || (
         <fab.text
           text="Loading..."
           fill="white"
-          left={props.left}
-          top={props.top}
+          left={imageProps.left}
+          top={imageProps.top}
         />
-      )}
-      <FabImage props={props} setLoaded={setLoaded} />
-    </>
-  );
-}
+      )
+    );
+  }
 
-export function FabImageWrapper(props: FabImageProps) {
-  const showImage = useFabricStore((state) => state.showImage);
-  return showImage ? <FabImageWithFallback {...props} /> : null;
-}
+  return <fab.image instance={image} {...imageProps} />;
+};
+
+// Note: FabImageWrapper and FabImageWithFallback have been removed in favor of a more declarative API.
+// The new `FabImage` component handles its own loading and error states.
+// The `fallback` prop can be used to render custom loading or error content.

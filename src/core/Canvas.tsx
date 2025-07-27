@@ -1,29 +1,41 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import * as fabric from 'fabric';
-import { useFabricStore } from '../hooks/fabricStore.js';
 import { FabricReconciler, type FabricRoot } from '../reconciler/hostConfig.js';
+import { FabricContext, FabricContextValue } from './FabricContext.js';
+import type { Root } from 'react-reconciler';
 
 export interface FabricCanvasProps
-  extends React.HTMLAttributes<HTMLCanvasElement> {}
+  extends React.CanvasHTMLAttributes<HTMLCanvasElement> {
+  onLoad?: (canvas: fabric.Canvas) => void;
+  onError?: (error: Error) => void;
+  fabricCanvasOptions?: fabric.ICanvasOptions;
+}
 
 export const FabricCanvas: React.FC<FabricCanvasProps> = ({
   children,
+  onLoad,
+  onError,
+  fabricCanvasOptions,
   ...rest
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
-  const rootRef = useRef<any>(null); // Ref to hold the React-Fabric root
-  const setCanvas = useFabricStore((state) => state.action.setCanvas);
+  const rootRef = useRef<Root | null>(null);
 
-  // Initialize Fabric canvas and React root once on mount
+  const contextValue = useMemo<FabricContextValue>(
+    () => ({
+      canvas: fabricCanvasRef.current,
+    }),
+    [fabricCanvasRef.current],
+  );
+
   useEffect(() => {
     if (!canvasRef.current) return;
 
-    const fabricCanvas = new fabric.Canvas(canvasRef.current);
+    const canvasEl = canvasRef.current;
+    const fabricCanvas = new fabric.Canvas(canvasEl, fabricCanvasOptions);
     fabricCanvasRef.current = fabricCanvas;
-    setCanvas(fabricCanvas);
 
-    // Create React-Fabric root
     const container: FabricRoot = { canvas: fabricCanvas };
     rootRef.current = FabricReconciler.createContainer(
       container,
@@ -32,32 +44,33 @@ export const FabricCanvas: React.FC<FabricCanvasProps> = ({
       false,
       false,
       '',
-      (error) => console.error(error),
+      onError || ((error: Error) => console.error(error)),
       null,
     );
 
-    // Initial render
-    FabricReconciler.updateContainer(children, rootRef.current, null);
+    if (onLoad) {
+      onLoad(fabricCanvas);
+    }
 
     return () => {
-      // Cleanup on unmount
-      fabricCanvas.dispose();
-      setCanvas(null);
-
-      // Unmount React tree
-      if (rootRef.current) {
-        FabricReconciler.updateContainer(null, rootRef.current, null);
+      FabricReconciler.updateContainer(null, rootRef.current, null, () => {
+        fabricCanvas.dispose();
         rootRef.current = null;
-      }
+        fabricCanvasRef.current = null;
+      });
     };
-  }, []); // Empty deps: runs once on mount
+  }, [fabricCanvasOptions, onLoad, onError]);
 
-  // Update React tree when children change
   useEffect(() => {
     if (rootRef.current) {
       FabricReconciler.updateContainer(children, rootRef.current, null);
     }
   }, [children]);
 
-  return <canvas ref={canvasRef} {...rest} />;
+  return (
+    <FabricContext.Provider value={contextValue}>
+      <canvas ref={canvasRef} {...rest} />
+      {contextValue.canvas && children}
+    </FabricContext.Provider>
+  );
 };

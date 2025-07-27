@@ -1,5 +1,7 @@
-import { useFabricStore } from './fabricStore.js';
+import { useContext } from 'react';
+import { FabricContext } from '../core/FabricContext.js';
 
 export function useFabricCanvas() {
-  return useFabricStore((state) => state.canvas);
+  const { canvas } = useContext(FabricContext);
+  return canvas;
 }
